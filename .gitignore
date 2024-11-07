@@ -1,0 +1,4 @@
+.DS_Store
+.github
+/__pycache__/*
+settings.py
