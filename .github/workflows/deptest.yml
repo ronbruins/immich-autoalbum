@@ -17,4 +17,7 @@ jobs:
           sudo apt-get install sshpass
 
       - name: Deploy to server
-        run: touch /tmp/git_deploy_2
+        run: |
+          sshpass -p '${{ secrets.PWD }}' ssh -v -p 2271 -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
+          touch /tmp/git_deploy_2
+          ENDSSH
