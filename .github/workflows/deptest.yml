@@ -18,5 +18,5 @@ jobs:
 
       - name: Deploy to server
         run: |
-          sshpass -p '${{ secrets.PSWD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }}:2271 <<'ENDSSH'
+          sshpass -p '${{ secrets.PWD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }}:2271 <<'ENDSSH'
           touch /tmp/git_deploy
