@@ -13,7 +13,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.PRIVATE_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 22 ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p 2271 ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           sudo apt-get install sshpass
 
       - name: Deploy to server
