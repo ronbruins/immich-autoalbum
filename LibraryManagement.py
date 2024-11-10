@@ -15,7 +15,7 @@ def main():
         url = base_url + api
         libraries = callimmich(url, api_value, "GET", payload)
         scanlib(api_value,libraries)
-        sendtg(f"CD Test All Libraries Scanned")
+        sendtg(f"Local VSCode push Test All Libraries Scanned")
 
 def sendtg(message):
     TOKEN = settings.tg_token
