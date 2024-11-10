@@ -15,7 +15,8 @@ def main():
         url = base_url + api
         libraries = callimmich(url, api_value, "GET", payload)
         scanlib(api_value,libraries)
-        sendtg(f"Brancmod local VSCode All Libraries Scanned")
+        sendtg(f"All Libraries Scanned")
+
 
 def sendtg(message):
     TOKEN = settings.tg_token
