@@ -77,6 +77,7 @@ class ImmichApi:
         body = {}
         body['isNotInAlbum'] = 'true'
         body['size'] = asset_limit
+        # body['type'] = 'IMAGE'
         if search_lib != "":
             print("Using single library owned by user")
             body['libraryId'] = search_lib
@@ -104,21 +105,22 @@ class ImmichApi:
     def get_albums(self, id=""):
         album_list = {}
         album_list['album'] = {}
-        #api = "albums"
-        api="albums?shared=true"
+        api = "albums?shared=true"
+        # api="albums?shared=true"
         # Hard Coded that only a specific album User will go through all existing albums
         # While Individual Users only check their own owned albums
         # Need to find way to make this dynamic
         # if self.init_user == "Brunij":
         #     api="albums?shared=true"
         # else:
-        #     api="albums"
+        # api="albums"
         url = self.base_url + api
         album_ids = []
         admin = False
         body = {}
         if id == "":
             responseJson = self.call_api("GET", api, admin, body)
+            #print(responseJson)
 
             for album in responseJson:
                 album_name = album['albumName']
@@ -161,10 +163,11 @@ class ImmichApi:
                     admin = False
                     payload=json.dumps(body)
                     album_data = self.call_api("POST", api, admin, payload)
+                    # print(AlbumUsers)
 
 
                     if AlbumUsers != []:
-                        print("Sharing")
+                        # print(f"Sharing with {AlbumUsers}")
                         album_id = album_data['id']
                         body = {
                         'albumUsers': AlbumUsers
@@ -172,7 +175,9 @@ class ImmichApi:
                         api = f"albums/{album_id}/users"
                         admin = False
                         payload=json.dumps(body)
-                        self.call_api("PUT", api, admin, payload)
+                        # print(payload)
+                        debugresp = self.call_api("PUT", api, admin, payload)
+                        # print(debugresp)
 
             else:
                 AlbumId = album_list['album'][albumName]
@@ -213,8 +218,11 @@ class ImmichApi:
         #print(f"HEADERS TO CHECK: {self.headers}")
         for library in libraries:
             if set_user_id == library['ownerId']:
-                search_lib = library['id']
-                #print(library)
+                lib_name = library['name']
+                if "Video" not in lib_name:
+                    search_lib = library['id']              
+                    print(f"Name: {lib_name}")
+                    print(library)
         return search_lib
     
 
@@ -225,55 +233,58 @@ class ImmichApi:
             process_asset = True
             path = asset['originalPath']
             #print(path)
-            asset_id = asset['id']
-            path = path.split("/")
-            album_locid = len(path) - 2
-            album = path[album_locid]
-            album = album.replace("_"," ")
+            thumbhash = asset['thumbhash']
+            # print(thumbhash)
+            if thumbhash != None:
+                asset_id = asset['id']
+                path = path.split("/")
+                album_locid = len(path) - 2
+                album = path[album_locid]
+                album = album.replace("_"," ")
 
-            if geo_album_name != "" and process_asset == True:
-                gen_album = f"{album[:4]} {geo_album_name}"
-                if gen_album not in album_dict:
-                    album_dict[gen_album] = []
-                    album_dict[gen_album].append(asset_id)
-                else:
-                    album_dict[gen_album].append(asset_id)
-                process_asset = False 
-
-            for cons_check in cons_albums:
-                if cons_check in album and process_asset == True:
-                    gen_album = cons_albums[cons_check]
+                if geo_album_name != "" and process_asset == True:
+                    gen_album = f"{album[:4]} {geo_album_name}"
                     if gen_album not in album_dict:
                         album_dict[gen_album] = []
                         album_dict[gen_album].append(asset_id)
                     else:
                         album_dict[gen_album].append(asset_id)
-                    process_asset = False        
-            if " P" in album and process_asset == True:
-                print("#################################### THIS IS SUPPOSED TO BE A PERSONAL ALBUM ####################################")
-            if "@" in album and process_asset == True:
-                album = album.replace("@","")
-                album = album.replace("#","")
-                if album not in album_dict:
-                    album_dict[album] = []
-                    album_dict[album].append(asset_id)
-                else:
-                    album_dict[album].append(asset_id)
-            elif "@@" in album and process_asset == True:
-                album = album.replace("@@","")
-                album = album.replace("#","")
-                if album not in album_dict:
-                    album_dict[album] = []
-                    album_dict[album].append(asset_id)
-                else:
-                    album_dict[album].append(asset_id)
-            elif "#" in album and process_asset == True:
-                gen_album = f"{album[:4]} Diverse Fotos"
-                if gen_album not in album_dict:
-                    album_dict[gen_album] = []
-                    album_dict[gen_album].append(asset_id)
-                else:
-                    album_dict[gen_album].append(asset_id)
+                    process_asset = False 
+
+                for cons_check in cons_albums:
+                    if cons_check in album and process_asset == True:
+                        gen_album = cons_albums[cons_check]
+                        gen_album = f"{album[:4]} {gen_album}"
+                        if gen_album not in album_dict:
+                            album_dict[gen_album] = []
+                            album_dict[gen_album].append(asset_id)
+                        else:
+                            album_dict[gen_album].append(asset_id)
+                        process_asset = False        
+
+                if "@" in album and process_asset == True:
+                    album = album.replace("@","")
+                    album = album.replace("#","")
+                    if album not in album_dict:
+                        album_dict[album] = []
+                        album_dict[album].append(asset_id)
+                    else:
+                        album_dict[album].append(asset_id)
+                elif "@@" in album and process_asset == True:
+                    album = album.replace("@@","")
+                    album = album.replace("#","")
+                    if album not in album_dict:
+                        album_dict[album] = []
+                        album_dict[album].append(asset_id)
+                    else:
+                        album_dict[album].append(asset_id)
+                elif "#" in album and process_asset == True:
+                    gen_album = f"{album[:4]} Diverse Fotos"
+                    if gen_album not in album_dict:
+                        album_dict[gen_album] = []
+                        album_dict[gen_album].append(asset_id)
+                    else:
+                        album_dict[gen_album].append(asset_id)
         return album_dict
     
     def build_album_dict_by_tag(self, assetsReceived,cons_albums,geo_album_name, personal):
@@ -281,45 +292,51 @@ class ImmichApi:
         for asset in assetsReceived:
             process_asset = True
             path = asset['originalPath']
-            asset_id = asset['id']
-            asset_info = self.get_asset_info(asset_id)
-            #print(f"checking {path}")
-            try:
-                album_tag = asset_info['tags'][0]['name']
-                #print(album_tag)
-                album = album_tag
+            thumbhash = asset['thumbhash']
+            if thumbhash != None:
+                asset_id = asset['id']
+                asset_info = self.get_asset_info(asset_id)
+                #print(f"checking {path}")
+                try:
+                    for tags in asset_info['tags']:
+                        # print(tags['name'])
+                        album_tag = tags['name']
+                        # album_tag = asset_info['tags'][0]['name']
+                        # print(album_tag)
+                        album = album_tag
 
-                for cons_check in cons_albums:
-                    if cons_check in album and process_asset == True:
-                        gen_album = cons_albums[cons_check]
-                        if gen_album not in album_dict:
-                            album_dict[gen_album] = []
-                            album_dict[gen_album].append(asset_id)
-                        else:
-                            album_dict[gen_album].append(asset_id)
-                        process_asset = False      
-                
+                        for cons_check in cons_albums:
+                            if cons_check in album and process_asset == True:
+                                gen_album = cons_albums[cons_check]
+                                gen_album = f"{album[:4]} {gen_album}"
+                                if gen_album not in album_dict:
+                                    album_dict[gen_album] = []
+                                    album_dict[gen_album].append(asset_id)
+                                else:
+                                    album_dict[gen_album].append(asset_id)
+                                process_asset = False      
+                        
 
-                if "@" in album and personal == False and process_asset == True:
-                    album = album.replace("@","")
-                    album = album.replace("#","")
-                    #print(f"SHARED ALBUM: {album}")
-                    if album not in album_dict:
-                        album_dict[album] = []
-                        album_dict[album].append(asset_id)
-                    else:
-                        album_dict[album].append(asset_id)
-                elif "@" not in album and personal == True and process_asset == True:
-                    #album = album.replace(" P","")
-                    #print(f"PERSONAL ALBUM: {album}")
-                    #album = album.replace("#","")
-                    if album not in album_dict:
-                        album_dict[album] = []
-                        album_dict[album].append(asset_id)
-                    else:
-                        album_dict[album].append(asset_id)
-            except:
-                pass
+                        if "@" in album and personal == False and process_asset == True:
+                            album = album.replace("@","")
+                            album = album.replace("#","")
+                            #print(f"SHARED ALBUM: {album}")
+                            if album not in album_dict:
+                                album_dict[album] = []
+                                album_dict[album].append(asset_id)
+                            else:
+                                album_dict[album].append(asset_id)
+                        elif "@" not in album and personal == True and process_asset == True:
+                            #album = album.replace(" P","")
+                            #print(f"PERSONAL ALBUM: {album}")
+                            #album = album.replace("#","")
+                            if album not in album_dict:
+                                album_dict[album] = []
+                                album_dict[album].append(asset_id)
+                            else:
+                                album_dict[album].append(asset_id)
+                except:
+                    pass
         return album_dict
     
 

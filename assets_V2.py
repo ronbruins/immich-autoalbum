@@ -21,16 +21,36 @@ album_dict = {}
 asset_limit = 1000
 
 #task="album_info"
+
 #task="list_albums"
-#task="delete"
+
 #task="geo_create"
+
 task="create_by_tag"
-#task="create"
+
+
+task="create"
+# task="delete"
+
+
 #task="getassetinfo"
 #task="debug"
 
+# for user in 3,5:
+#     print(user)
+#     task="create_by_tag"
+
+
 init_users = settings.init_users
-iun = "3"
+iun = "2"
+'''
+init_users['1'] = "Ron Bruins"
+init_users['2'] = "Ron Mirjam"
+init_users['3'] = "Mirjam Nijburg"
+init_users['4'] = "Julian Bruins"
+init_users['5'] = "Thibault Bruins"
+init_users['6'] = "Sandra Veld"
+'''
 
 init_user = init_users[iun]
 api_key = api_keys[init_user]
@@ -82,12 +102,12 @@ def init_album_build(share_veto=""):
         single_lib = False
     immich_users = rbimmich.get_users()
     AlbumUsers,set_user_id = rbimmich.build_album_users(immich_users,init_user,to_share,share_veto)
-    print(set_user_id)
+    print(f"User: {set_user_id}")
     if single_lib == True:
         libraries = rbimmich.get_libraries()
         search_lib = rbimmich.get_search_lib(set_user_id,libraries)
         
-        print(search_lib)
+        print(f"Search Lib: {search_lib}")
     else:
         search_lib=""
     assetsReceived = rbimmich.get_assets(search_lib,asset_limit)
@@ -118,14 +138,18 @@ def create_albums_by_tag():
     for k,v in album_dict.items():
         print(k)
     rbimmich.createAlbum(album_dict,AlbumUsers)
+    print(f"############## {AlbumUsers}")
 
-    share_veto = settings.tag_share_veto
+    # share_veto = settings.tag_share_veto
+    # tag_veto['Mirjam Nijburg'] = "MirjamShare"
+    share_veto = settings.tag_veto[init_user]
     assetsReceived,AlbumUsers = init_album_build(share_veto)
     geo_album_name="" # Only used for geo_create to specifiy the album
     personal = False
     album_dict = rbimmich.build_album_dict_by_tag(assetsReceived,cons_albums,geo_album_name, personal)
     for k,v in album_dict.items():
         print(k)
+    # print(f"@@@@@@@@@@@@@@ {AlbumUsers}")
     rbimmich.createAlbum(album_dict,AlbumUsers)
 
 def build_geo(geo_dict):
@@ -162,7 +186,7 @@ def check_radius(geo_data,check_lat,check_lon,org_path):
 
     ref_lat = center_point[0]['lat']
     ref_lon = center_point[0]['lng']
-    radius = 0.3 # in kilometer
+    radius = 0.5 # in kilometer
     a = haversine(ref_lon, ref_lat, check_lon, check_lat)
     
     if a <= radius:
