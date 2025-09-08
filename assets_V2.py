@@ -24,12 +24,12 @@ asset_limit = 1000
 
 #task="list_albums"
 
-#task="geo_create"
+# task="geo_create"
 
 task="create_by_tag"
 
 
-task="create"
+# task="create"
 # task="delete"
 
 
@@ -42,7 +42,7 @@ task="create"
 
 
 init_users = settings.init_users
-iun = "2"
+iun = "3"
 '''
 init_users['1'] = "Ron Bruins"
 init_users['2'] = "Ron Mirjam"
