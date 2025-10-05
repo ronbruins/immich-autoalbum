@@ -20,16 +20,16 @@ albums_set = set()
 album_dict = {}
 asset_limit = 1000
 
-#task="album_info"
+# task="album_info"
 
 #task="list_albums"
 
 # task="geo_create"
 
-task="create_by_tag"
+# task="create_by_tag"
 
 
-# task="create"
+task="create"
 # task="delete"
 
 
@@ -42,7 +42,7 @@ task="create_by_tag"
 
 
 init_users = settings.init_users
-iun = "3"
+iun = "2"
 '''
 init_users['1'] = "Ron Bruins"
 init_users['2'] = "Ron Mirjam"
@@ -119,6 +119,12 @@ def create_albums():
     assetsReceived,AlbumUsers = init_album_build()
     geo_album_name="" # Only used for geo_create to specifiy the album
     album_dict = rbimmich.build_album_dict(assetsReceived,cons_albums,geo_album_name)
+    data_dict = album_dict
+    sorted_data_keys = json.dumps({k: data_dict[k] for k in sorted(data_dict)})
+    # print(sorted_data_keys)
+    # print(type(sorted_data_keys))
+    album_dict = json.loads(sorted_data_keys)
+    # print(type(album_dict))
     for k,v in album_dict.items():
         print(k)
     rbimmich.createAlbum(album_dict,AlbumUsers)

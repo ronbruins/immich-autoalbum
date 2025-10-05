@@ -105,8 +105,8 @@ class ImmichApi:
     def get_albums(self, id=""):
         album_list = {}
         album_list['album'] = {}
-        api = "albums?shared=true"
-        # api="albums?shared=true"
+        # api = "albums?shared=false"
+        api="albums?shared=true"
         # Hard Coded that only a specific album User will go through all existing albums
         # While Individual Users only check their own owned albums
         # Need to find way to make this dynamic
@@ -232,12 +232,12 @@ class ImmichApi:
         for asset in assetsReceived:
             process_asset = True
             path = asset['originalPath']
-            #print(path)
             thumbhash = asset['thumbhash']
             # print(thumbhash)
             if thumbhash != None:
                 asset_id = asset['id']
                 path = path.split("/")
+
                 album_locid = len(path) - 2
                 album = path[album_locid]
                 album = album.replace("_"," ")
