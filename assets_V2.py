@@ -29,7 +29,7 @@ asset_limit = 1000
 # task="create_by_tag"
 
 
-task="create"
+# task="create"
 # task="delete"
 
 
@@ -40,9 +40,10 @@ task="create"
 #     print(user)
 #     task="create_by_tag"
 
+task="create_by_tag"
 
 init_users = settings.init_users
-iun = "2"
+iun = "4"
 '''
 init_users['1'] = "Ron Bruins"
 init_users['2'] = "Ron Mirjam"
