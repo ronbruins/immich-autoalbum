@@ -21,18 +21,11 @@ album_dict = {}
 asset_limit = 1000
 
 # task="album_info"
-
 #task="list_albums"
-
 # task="geo_create"
-
 # task="create_by_tag"
-
-
 # task="create"
 # task="delete"
-
-
 #task="getassetinfo"
 #task="debug"
 
@@ -64,7 +57,6 @@ def main():
     warn()
     
     if task == "debug":
-        #pass
         print(rbimmich.get_albums())
     elif task == "create":
         create_albums()
@@ -76,9 +68,6 @@ def main():
         asset_info = rbimmich.get_asset_info(assetid)
         print(asset_info['tags'][0]['name'])
         print(asset_info['tags'])
-
-        # for a in asset_info:
-        #     print(a)
     elif task == "delete":
         delete_albums()
     elif task == "list_albums":
