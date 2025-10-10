@@ -78,15 +78,15 @@ def create_albums():
 
     # print(json.dumps(album_dict))
     # print(AlbumUsers)
-    # data_dict = album_dict
-    # sorted_data_keys = json.dumps({k: data_dict[k] for k in sorted(data_dict)})
-    # # print(sorted_data_keys)
+    data_dict = album_dict
+    sorted_data_keys = json.dumps({k: data_dict[k] for k in sorted(data_dict)})
+    print(sorted_data_keys)
     # # print(type(sorted_data_keys))
-    # album_dict = json.loads(sorted_data_keys)
+    album_dict = json.loads(sorted_data_keys)
     # # print(type(album_dict))
-    # for k,v in album_dict.items():
-    #     print(f"%%{k}%%{v}")
-    #     print(" ")
+    for k,v in album_dict.items():
+        print(f"%%{k}%%{v}")
+        print(" ")
     # rbimmich.createAlbum(album_dict,AlbumUsers)
 
 

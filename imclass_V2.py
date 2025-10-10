@@ -277,6 +277,6 @@ class ImmichApi:
                 # album_dict[procAlbum]['assetIds'].append(asset_id)
                 # album_dict[procAlbum]['albumUsers'] = AlbumUsers
 
-        print(json.dumps(album_dict))    
+        # print(json.dumps(album_dict))    
         return album_dict
   
