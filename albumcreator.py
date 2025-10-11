@@ -24,8 +24,8 @@ asset_limit = 1000
 #task="list_albums"
 # task="geo_create"
 # task="create_by_tag"
-task="create"
-# task="delete"
+# task="create"
+task="delete"
 #task="getassetinfo"
 #task="debug"
 
@@ -80,7 +80,7 @@ def main():
 def delete_albums():
     # bug: delete albums tries to delete all albums, because of share option in get album method, needs to be checked
     album_ids,album_list = rbimmich.get_albums()
-    #print(album_ids,album_list)
+    print(album_ids,album_list)
     for album_id in album_ids:
         print(f"deleting {album_id}")
         rbimmich.delete_album(album_id)

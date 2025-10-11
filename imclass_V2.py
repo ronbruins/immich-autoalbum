@@ -134,20 +134,21 @@ class ImmichApi:
 
         return r.json()
     
-    def createAlbum(self, album_dict,AlbumUsers ):
+    def createAlbum(self, album_dict):
         album_ids,album_list = self.get_albums()
-        for albumName,assetIds in album_dict.items():
+        for albumName,albumDetails in album_dict.items():
+            # print(albumName, assetIds)
+            print(" ")
+            assetIds = album_dict[albumName]['assetIds']
+            AlbumUsers = album_dict[albumName]['albumUsers']
 
             api = "albums"
             url = self.base_url + api
             headers = {
             'x-api-key': f'{self.api_key}',
             }        
-            #if "@" in albumName:
             if albumName not in album_list['album']:
                 if albumName != None:
-                    #albumName = albumName.replace("@","")
-                    #albumName = albumName.replace("#","")
                     body = {
                     'albumName': albumName,
                     'description': albumName,
@@ -158,11 +159,9 @@ class ImmichApi:
                     admin = False
                     payload=json.dumps(body)
                     album_data = self.call_api("POST", api, admin, payload)
-                    # print(AlbumUsers)
-
-
+                    AlbumUsers = album_dict[albumName]['albumUsers']
                     if AlbumUsers != []:
-                        # print(f"Sharing with {AlbumUsers}")
+                        print(f"Sharing with {AlbumUsers}")
                         album_id = album_data['id']
                         body = {
                         'albumUsers': AlbumUsers
@@ -190,20 +189,16 @@ class ImmichApi:
         AlbumUsers[init_user] = {}
         print(f"Building Albums and shares for user: {init_user}")
         for line in to_share[init_user]:
-            AlbumUsers[init_user][line] = []
-        # print(to_share[init_user])
-        
+            AlbumUsers[init_user][line] = []        
             for user in immich_users:
                 user_name = user['name']
                 if init_user == user_name:
                     set_user_id = user['id']
-
                 if user_name in to_share[init_user][line]:
                     print(f"Sharing with: {user_name}")
                     userid = user['id']
                     user_detail = {"role": "editor", "userId":userid}
                     AlbumUsers[init_user][line].append(user_detail)
-        # print(AlbumUsers)
         return AlbumUsers,set_user_id
     
 
@@ -246,7 +241,7 @@ class ImmichApi:
                         album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['def']
                     album_dict[procAlbum]['assetIds'].append(asset_id)
                 elif "@@" in album and process_asset == True:
-                    procAlbum = procAlbum.replace(" @","")
+                    procAlbum = procAlbum.replace(" @@","")
                     if procAlbum not in album_dict:
                         print(f"CREATE ALBUM DICT {procAlbum}")
                         album_dict[procAlbum] = {}
@@ -254,17 +249,17 @@ class ImmichApi:
                         album_dict[procAlbum]['albumUsers'] = []
                         # print(f"DDDDDDDDDATATATATA {AlbumUsers[init_user]['@@']}")
                         
-                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['@']
+                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['@@']
                     album_dict[procAlbum]['assetIds'].append(asset_id)
                 elif "@" in album and process_asset == True:
-                    procAlbum = procAlbum.replace(" @@","")
+                    procAlbum = procAlbum.replace(" @","")
                     if procAlbum not in album_dict:
                         print(f"CREATE ALBUM DICT {procAlbum}")
                         album_dict[procAlbum] = {}
                         album_dict[procAlbum]['assetIds'] = []
                         album_dict[procAlbum]['albumUsers'] = []
                         # print(f"ATATATATA {AlbumUsers[init_user]['@']}")
-                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['@@']
+                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['@']
                     album_dict[procAlbum]['assetIds'].append(asset_id)
                 
                 # procAlbum = procAlbum.replace("@","")

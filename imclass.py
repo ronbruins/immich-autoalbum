@@ -106,14 +106,14 @@ class ImmichApi:
         album_list = {}
         album_list['album'] = {}
         # api = "albums?shared=false"
-        api="albums?shared=true"
+        # api="albums?shared=true"
         # Hard Coded that only a specific album User will go through all existing albums
         # While Individual Users only check their own owned albums
         # Need to find way to make this dynamic
         # if self.init_user == "Brunij":
         #     api="albums?shared=true"
         # else:
-        # api="albums"
+        api="albums"
         url = self.base_url + api
         album_ids = []
         admin = False
