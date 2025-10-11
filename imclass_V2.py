@@ -214,8 +214,6 @@ class ImmichApi:
                     print(library)
         return search_lib
     
-
-
     def build_album_dict(self, assetsReceived,AlbumUsers,init_user):
         album_dict = {}
         for asset in assetsReceived:
@@ -230,48 +228,42 @@ class ImmichApi:
                 album = album.replace("_"," ")
                 procAlbum = album
                 if "#" in procAlbum and process_asset == True:
+                    suffix = "#"
                     procAlbum = f"{album[:4]} Diverse Fotos"
-                    procAlbum = procAlbum.replace("#","")
-                    if procAlbum not in album_dict:
-                        print(f"CREATE ALBUM DICT {procAlbum}")
-                        album_dict[procAlbum] = {}
-                        album_dict[procAlbum]['assetIds'] = []
-                        album_dict[procAlbum]['albumUsers'] = []
-                        # print(f"DEFEFEFEFE {AlbumUsers[init_user]['def']}")
-                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['def']
-                    album_dict[procAlbum]['assetIds'].append(asset_id)
+                    procAlbum = procAlbum.replace(f" {suffix}","")
+                    
+                    # if procAlbum not in album_dict:
+                    #     print(f"CREATE ALBUM DICT {procAlbum}")
+                    #     album_dict[procAlbum] = {}
+                    #     album_dict[procAlbum]['assetIds'] = []
+                    #     album_dict[procAlbum]['albumUsers'] = []
+                    #     album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
+                    # album_dict[procAlbum]['assetIds'].append(asset_id)
+
                 elif "@@" in album and process_asset == True:
-                    procAlbum = procAlbum.replace(" @@","")
-                    if procAlbum not in album_dict:
-                        print(f"CREATE ALBUM DICT {procAlbum}")
-                        album_dict[procAlbum] = {}
-                        album_dict[procAlbum]['assetIds'] = []
-                        album_dict[procAlbum]['albumUsers'] = []
-                        # print(f"DDDDDDDDDATATATATA {AlbumUsers[init_user]['@@']}")
-                        
-                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['@@']
-                    album_dict[procAlbum]['assetIds'].append(asset_id)
+                    suffix = "@@"
+                    procAlbum = procAlbum.replace(f" {suffix}","")
+
+                    # if procAlbum not in album_dict:
+                    #     print(f"CREATE ALBUM DICT {procAlbum}")
+                    #     album_dict[procAlbum] = {}
+                    #     album_dict[procAlbum]['assetIds'] = []
+                    #     album_dict[procAlbum]['albumUsers'] = []                        
+                    #     album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
+                    # album_dict[procAlbum]['assetIds'].append(asset_id)
+
                 elif "@" in album and process_asset == True:
-                    procAlbum = procAlbum.replace(" @","")
-                    if procAlbum not in album_dict:
-                        print(f"CREATE ALBUM DICT {procAlbum}")
-                        album_dict[procAlbum] = {}
-                        album_dict[procAlbum]['assetIds'] = []
-                        album_dict[procAlbum]['albumUsers'] = []
-                        # print(f"ATATATATA {AlbumUsers[init_user]['@']}")
-                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user]['@']
-                    album_dict[procAlbum]['assetIds'].append(asset_id)
+                    suffix = "@"
+                    procAlbum = procAlbum.replace(f" {suffix}","")
+
+                if procAlbum not in album_dict:
+                    print(f"CREATE ALBUM DICT {procAlbum}")
+                    album_dict[procAlbum] = {}
+                    album_dict[procAlbum]['assetIds'] = []
+                    album_dict[procAlbum]['albumUsers'] = []
+                    album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
+                album_dict[procAlbum]['assetIds'].append(asset_id)
                 
-                # procAlbum = procAlbum.replace("@","")
-                
-                # if procAlbum not in album_dict:
-                #     album_dict[procAlbum] = {}
-                #     album_dict[procAlbum]['assetIds'] = []
 
-
-                # album_dict[procAlbum]['assetIds'].append(asset_id)
-                # album_dict[procAlbum]['albumUsers'] = AlbumUsers
-
-        # print(json.dumps(album_dict))    
         return album_dict
   

@@ -84,10 +84,10 @@ def create_albums():
     # # print(type(sorted_data_keys))
     album_dict = json.loads(sorted_data_keys)
     # # print(type(album_dict))
-    # for k,v in album_dict.items():
-    #     print(k,v)
-    #     print(" ")
-    rbimmich.createAlbum(album_dict)
+    for k,v in album_dict.items():
+        print(k,v)
+        print(" ")
+    # rbimmich.createAlbum(album_dict)
 
 
 
