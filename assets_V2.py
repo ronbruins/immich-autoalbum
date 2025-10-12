@@ -24,8 +24,9 @@ asset_limit = 1000
 #task="list_albums"
 # task="geo_create"
 # task="create_by_tag"
-# task="create"
-task="delete"
+task="create"
+# task="loop"
+# task="delete"
 #task="getassetinfo"
 #task="debug"
 
@@ -36,7 +37,7 @@ task="delete"
 # task="create_by_tag"
 
 init_users = settings.init_users
-iun = "8"
+iun = "1"
 '''
 init_users['1'] = "Ron Bruins"
 init_users['2'] = "Ron Mirjam"
@@ -50,17 +51,21 @@ init_user = init_users[iun]
 api_key = api_keys[init_user]
 
 rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
-
+album_dict = {}
 
 def main():
     warn()
-    create_albums()
-    # print(json.dumps(to_share))
+    if task == "debug":
+        print(rbimmich.get_albums())
+    elif task == "create":
+        album_dict={}
+        create_albums(album_dict)
+    # elif task == "loop":
+    #     album_dict={}
+    #     create_albums(album_dict, str(iun))
     
 def init_album_build():
     immich_users = rbimmich.get_users()
-    # for user in immich_users:
-    #     print(user)
     AlbumUsers,set_user_id = rbimmich.build_album_users(immich_users,init_user,to_share)
     print(f"User: {set_user_id}")
     assetsReceived = rbimmich.get_assets(asset_limit)
@@ -68,25 +73,19 @@ def init_album_build():
     return assetsReceived ,AlbumUsers
 
 
-def create_albums():
+def create_albums(album_dict):
+    init_user = init_users[iun]
+    print(init_user)
     assetsReceived,AlbumUsers = init_album_build()
-    # assetsReceived = init_album_build()
-    # print("###################")
-    # print(json.dumps(assetsReceived))
-
-    album_dict = rbimmich.build_album_dict(assetsReceived,AlbumUsers,init_user)
-
-    # print(json.dumps(album_dict))
-    # print(AlbumUsers)
-    data_dict = album_dict
+    user_album_dict = rbimmich.build_album_dict(assetsReceived,AlbumUsers,init_user,album_dict)
+    tag_album_dict = rbimmich.build_album_dict_by_tag(assetsReceived,AlbumUsers,init_user,user_album_dict)
+    data_dict = tag_album_dict
     sorted_data_keys = json.dumps({k: data_dict[k] for k in sorted(data_dict)})
-    # print(sorted_data_keys)
-    # # print(type(sorted_data_keys))
     album_dict = json.loads(sorted_data_keys)
-    # # print(type(album_dict))
-    for k,v in album_dict.items():
-        print(k,v)
-        print(" ")
+    print(json.dumps(album_dict)) 
+
+
+
     # rbimmich.createAlbum(album_dict)
 
 

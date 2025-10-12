@@ -137,16 +137,14 @@ class ImmichApi:
     def createAlbum(self, album_dict):
         album_ids,album_list = self.get_albums()
         for albumName,albumDetails in album_dict.items():
-            # print(albumName, assetIds)
-            print(" ")
             assetIds = album_dict[albumName]['assetIds']
             AlbumUsers = album_dict[albumName]['albumUsers']
 
             api = "albums"
-            url = self.base_url + api
-            headers = {
-            'x-api-key': f'{self.api_key}',
-            }        
+            # url = self.base_url + api
+            # headers = {
+            # 'x-api-key': f'{self.api_key}',
+            # }        
             if albumName not in album_list['album']:
                 if albumName != None:
                     body = {
@@ -154,14 +152,13 @@ class ImmichApi:
                     'description': albumName,
                     "assetIds": assetIds,
                     }
-                    print(f"Creating Album: {albumName}")
                     payload = json.dumps(body)
                     admin = False
                     payload=json.dumps(body)
                     album_data = self.call_api("POST", api, admin, payload)
                     AlbumUsers = album_dict[albumName]['albumUsers']
                     if AlbumUsers != []:
-                        print(f"Sharing with {AlbumUsers}")
+                        print(f"Sharing {albumName} with {AlbumUsers}")
                         album_id = album_data['id']
                         body = {
                         'albumUsers': AlbumUsers
@@ -169,9 +166,7 @@ class ImmichApi:
                         api = f"albums/{album_id}/users"
                         admin = False
                         payload=json.dumps(body)
-                        # print(payload)
-                        debugresp = self.call_api("PUT", api, admin, payload)
-                        # print(debugresp)
+                        # debugresp = self.call_api("PUT", api, admin, payload)
 
             else:
                 AlbumId = album_list['album'][albumName]
@@ -195,7 +190,7 @@ class ImmichApi:
                 if init_user == user_name:
                     set_user_id = user['id']
                 if user_name in to_share[init_user][line]:
-                    print(f"Sharing with: {user_name}")
+                    # print(f"Sharing with: {user_name}")
                     userid = user['id']
                     user_detail = {"role": "editor", "userId":userid}
                     AlbumUsers[init_user][line].append(user_detail)
@@ -214,10 +209,9 @@ class ImmichApi:
                     print(library)
         return search_lib
     
-    def build_album_dict(self, assetsReceived,AlbumUsers,init_user):
-        album_dict = {}
+    def build_album_dict(self, assetsReceived,AlbumUsers,init_user, album_dict):
+        # album_dict = {}
         for asset in assetsReceived:
-            process_asset = True
             path = asset['originalPath']
             thumbhash = asset['thumbhash']
             if thumbhash != None:
@@ -227,43 +221,68 @@ class ImmichApi:
                 album = path[album_locid]
                 album = album.replace("_"," ")
                 procAlbum = album
-                if "#" in procAlbum and process_asset == True:
+                if "#" in procAlbum:
                     suffix = "#"
                     procAlbum = f"{album[:4]} Diverse Fotos"
-                    procAlbum = procAlbum.replace(f" {suffix}","")
-                    
-                    # if procAlbum not in album_dict:
-                    #     print(f"CREATE ALBUM DICT {procAlbum}")
-                    #     album_dict[procAlbum] = {}
-                    #     album_dict[procAlbum]['assetIds'] = []
-                    #     album_dict[procAlbum]['albumUsers'] = []
-                    #     album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
-                    # album_dict[procAlbum]['assetIds'].append(asset_id)
-
-                elif "@@" in album and process_asset == True:
+                elif "@@" in album:
                     suffix = "@@"
-                    procAlbum = procAlbum.replace(f" {suffix}","")
-
-                    # if procAlbum not in album_dict:
-                    #     print(f"CREATE ALBUM DICT {procAlbum}")
-                    #     album_dict[procAlbum] = {}
-                    #     album_dict[procAlbum]['assetIds'] = []
-                    #     album_dict[procAlbum]['albumUsers'] = []                        
-                    #     album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
-                    # album_dict[procAlbum]['assetIds'].append(asset_id)
-
-                elif "@" in album and process_asset == True:
+                elif "@" in album:
                     suffix = "@"
-                    procAlbum = procAlbum.replace(f" {suffix}","")
-
-                if procAlbum not in album_dict:
-                    print(f"CREATE ALBUM DICT {procAlbum}")
-                    album_dict[procAlbum] = {}
-                    album_dict[procAlbum]['assetIds'] = []
-                    album_dict[procAlbum]['albumUsers'] = []
-                    album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
-                album_dict[procAlbum]['assetIds'].append(asset_id)
+                else:
+                    suffix = "SKIP"
                 
+                if suffix != "SKIP":
+                    procAlbum = procAlbum.replace(f" {suffix}","")
+                    if procAlbum not in album_dict:
+                        # print(f"CREATE ALBUM DICT {procAlbum}")
+                        album_dict[procAlbum] = {}
+                        album_dict[procAlbum]['assetIds'] = []
+                        album_dict[procAlbum]['albumUsers'] = []
+                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
+                    album_dict[procAlbum]['assetIds'].append(asset_id)
 
         return album_dict
-  
+    
+    def build_album_dict_by_tag(self, assetsReceived,AlbumUsers,init_user,album_dict):
+        # album_dict = {}
+        for asset in assetsReceived:
+            path = asset['originalPath']
+            thumbhash = asset['thumbhash']
+            if thumbhash != None:
+                asset_id = asset['id']
+                asset_info = self.get_asset_info(asset_id)
+                # print(asset_info['tags'])
+                #print(f"checking {path}")
+                try:
+                    for tags in asset_info['tags']:
+                        # print(tags['name'])
+                        album_tag = tags['name']
+                        # album_tag = asset_info['tags'][0]['name']
+                        # print(album_tag)
+                        album = album_tag
+                        procAlbum = album
+                        # print(procAlbum, asset_id)
+                        
+                        if "#" in procAlbum:
+                            suffix = "#"
+                            procAlbum = f"{album[:4]} Diverse Fotos"
+                        elif "@@" in album:
+                            suffix = "@@"
+                        elif "@" in album:
+                            suffix = "@"
+                        else:
+                            suffix = "DEFGHIJ"
+                        procAlbum = procAlbum.replace(f" {suffix}","")
+                        # print(f"ALBUMDICT:")
+                        if procAlbum not in album_dict:
+                            # print(f"CREATE ALBUM DICT {procAlbum}")
+                            album_dict[procAlbum] = {}
+                            album_dict[procAlbum]['assetIds'] = []
+                            album_dict[procAlbum]['albumUsers'] = []
+                            album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
+                        album_dict[procAlbum]['assetIds'].append(asset_id)
+                        
+                except:
+                    pass
+        # print(json.dumps(album_dict)) 
+        return album_dict
