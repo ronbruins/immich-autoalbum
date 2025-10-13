@@ -30,21 +30,12 @@ class ImmichApi:
                         'Accept': 'application/json',
                         'x-api-key': f'{own_api_key}'
                         }
-                    # print("INDIVIDUAL HEADERS")
                     r = requests.request(method, url, headers=own_headers, data=body)
                 else:
                     r = requests.request(method, url, headers=self.headers, data=body)
                 responseJson = r.json()
                 return responseJson
             else:
-                # if own_api_key != "default":
-                #     own_headers = {
-                #         'Content-Type': 'application/json',
-                #         'Accept': 'application/json',
-                #         'x-api-key': f'{own_api_key}'
-                #         }
-                #     r = requests.request(method, url, headers=own_headers)
-                # else:
                 r = requests.request(method, url, headers=self.headers, data=body)
         else:
             print(f"@@@@@  ADMIN HEADERS @@@@@@ {self.admin_headers}")
@@ -62,7 +53,6 @@ class ImmichApi:
     def get_asset_info(self,asset_id):
         api = f"assets/{asset_id}"
         url = self.base_url + api
-        #r = requests.request("GET", url, headers=self.headers)
         admin = False
         body = {}
         asset_info = self.call_api("GET", api, admin, body)
@@ -126,8 +116,6 @@ class ImmichApi:
         body = {}
         if id == "":
             responseJson = self.call_api("GET", api, admin, body)
-            #print(responseJson)
-
             for album in responseJson:
                 album_name = album['albumName']
                 album_id = album['id']
@@ -162,10 +150,7 @@ class ImmichApi:
             own_api_key = album_dict[albumName]['api_key']
 
             api = "albums"
-            # url = self.base_url + api
-            # headers = {
-            # 'x-api-key': f'{self.api_key}',
-            # }        
+     
             if albumName not in album_list['album']:
                 if albumName != None:
                     body = {
@@ -220,18 +205,15 @@ class ImmichApi:
 
 
     def get_search_lib(self,set_user_id,libraries):
-        #print(f"HEADERS TO CHECK: {self.headers}")
         for library in libraries:
             if set_user_id == library['ownerId']:
                 lib_name = library['name']
                 if "Video" not in lib_name:
                     search_lib = library['id']              
                     print(f"Name: {lib_name}")
-                    # print(library)
         return search_lib
     
     def build_album_dict(self, assetsReceived,AlbumUsers,init_user, album_dict,api_key):
-        # album_dict = {}
         for asset in assetsReceived:
             path = asset['originalPath']
             thumbhash = asset['thumbhash']
@@ -255,7 +237,6 @@ class ImmichApi:
                 if suffix != "SKIP":
                     procAlbum = procAlbum.replace(f" {suffix}","")
                     if procAlbum not in album_dict:
-                        # print(f"CREATE ALBUM DICT {procAlbum}")
                         album_dict[procAlbum] = {}
                         album_dict[procAlbum]['api_key'] = api_key
                         album_dict[procAlbum]['assetIds'] = []
@@ -266,23 +247,18 @@ class ImmichApi:
         return album_dict
     
     def build_album_dict_by_tag(self, assetsReceived,AlbumUsers,init_user,album_dict,api_key):
-        # album_dict = {}
         for asset in assetsReceived:
             path = asset['originalPath']
             thumbhash = asset['thumbhash']
             if thumbhash != None:
                 asset_id = asset['id']
                 asset_info = self.get_asset_info(asset_id)
-                # print(asset_info['tags'])
-                #print(f"checking {path}")
                 try:
                     for tags in asset_info['tags']:
                         album_tag = tags['name']
 
                         album = album_tag
-                        procAlbum = album
-                        # print(procAlbum, asset_id)
-                        
+                        procAlbum = album                        
                         if "#" in procAlbum:
                             suffix = "#"
                             procAlbum = f"{album[:4]} Diverse Fotos"
@@ -293,9 +269,7 @@ class ImmichApi:
                         else:
                             suffix = "DEFGHIJ"
                         procAlbum = procAlbum.replace(f" {suffix}","")
-                        # print(f"ALBUMDICT:")
                         if procAlbum not in album_dict:
-                            # print(f"CREATE ALBUM DICT {procAlbum}")
                             album_dict[procAlbum] = {}
                             album_dict[procAlbum]['api_key'] = api_key
                             album_dict[procAlbum]['assetIds'] = []
@@ -305,5 +279,4 @@ class ImmichApi:
                         
                 except:
                     pass
-        # print(json.dumps(album_dict)) 
         return album_dict
