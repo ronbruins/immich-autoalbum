@@ -26,6 +26,8 @@ asset_limit = 1000
 # task="create_by_tag"
 # task="create"
 task="loop"
+# task="libloop"
+# task="deleteloop"
 # task="delete"
 #task="getassetinfo"
 #task="debug"
@@ -74,6 +76,29 @@ def main():
             print(k, album_dict[k]['api_key'])
         
         rbimmich.createAlbum(album_dict)
+    elif task == "deleteloop":
+         for iun in "2","3","4","5","1":
+            init_user = init_users[iun]
+            api_key = api_keys[init_user]
+            rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+            delete_albums(rbimmich)
+    elif task == "libloop":
+         for iun in "1":
+            init_user = init_users[iun]
+            api_key = api_keys[init_user]
+            rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+            # delete_albums(rbimmich)
+            libraries = rbimmich.get_libraries() 
+            print(json.dumps(libraries))
+
+
+def delete_albums(rbimmich):
+    # bug: delete albums tries to delete all albums, because of share option in get album method, needs to be checked
+    album_ids,album_list = rbimmich.get_albums()
+    # print(album_ids,album_list)
+    for album_id in album_ids:
+        print(f"deleting {album_id}")
+        rbimmich.delete_album(album_id)
     
 def init_album_build(rbimmich,init_user):
     immich_users = rbimmich.get_users()
