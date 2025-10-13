@@ -36,7 +36,7 @@ task="delete"
 # task="create_by_tag"
 
 init_users = settings.init_users
-iun = "1"
+iun = "5"
 '''
 init_users['1'] = "Ron Bruins"
 init_users['2'] = "Ron Mirjam"
@@ -76,6 +76,13 @@ def main():
     elif task == "album_info":
         album_info = rbimmich.get_albums(album_id)
         print(album_info)
+    elif task == "loopdelete":
+        for iun in "2","3","4","5","1":
+            # iun = "8"
+            init_user = init_users[iun]
+            api_key = api_keys[init_user]
+            rbimmich = imclass.ImmichApi(api_key,base_url,init_user,admin_api)
+            delete_albums()
 
 def delete_albums():
     # bug: delete albums tries to delete all albums, because of share option in get album method, needs to be checked
@@ -94,7 +101,7 @@ def init_album_build(share_veto=""):
     AlbumUsers,set_user_id = rbimmich.build_album_users(immich_users,init_user,to_share,share_veto)
     print(f"User: {set_user_id}")
     if single_lib == True:
-        libraries = rbimmich.get_libraries()
+        libraries = rbimmich.get_libraries() 
         search_lib = rbimmich.get_search_lib(set_user_id,libraries)
         
         print(f"Search Lib: {search_lib}")
