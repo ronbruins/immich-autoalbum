@@ -64,13 +64,9 @@ def main():
     elif task == "loop":
         album_dict={}
         for iun in "2","3","4","5","1":
-        # for iun in "1":
             init_user = init_users[iun]
-            # warn(init_user)
             api_key = api_keys[init_user]
             rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
-
-
             create_albums(rbimmich,album_dict,init_user,api_key)
         sorted_data_keys = json.dumps({k: album_dict[k] for k in sorted(album_dict)})
         album_dict = json.loads(sorted_data_keys)
@@ -91,26 +87,10 @@ def init_album_build(rbimmich,init_user):
 
 
 def create_albums(rbimmich,album_dict,init_user,api_key):
-    # init_user = init_users[iun]
-    # print(init_user)
     assetsReceived,AlbumUsers = init_album_build(rbimmich,init_user)
-    # print(assetsReceived)
-   
-
     user_album_dict = rbimmich.build_album_dict(assetsReceived,AlbumUsers,init_user,album_dict,api_key)
     tag_album_dict = rbimmich.build_album_dict_by_tag(assetsReceived,AlbumUsers,init_user,user_album_dict,api_key)
     album_dict = tag_album_dict
-
-
-    # sorted_data_keys = json.dumps({k: data_dict[k] for k in sorted(data_dict)})
-    # album_dict = json.loads(sorted_data_keys)
-    # return album_dict
-    # print(json.dumps(album_dict)) 
-    
-
-
-
-    # rbimmich.createAlbum(album_dict)
 
 
 
