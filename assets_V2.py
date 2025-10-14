@@ -65,7 +65,8 @@ def main():
         create_albums(album_dict)
     elif task == "loop":
         album_dict={}
-        for iun in "2","3","4","5","1":
+        for iun in "2","3","4","5","1","6":
+        # for iun in "4":
             init_user = init_users[iun]
             api_key = api_keys[init_user]
             rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
@@ -77,7 +78,7 @@ def main():
         
         rbimmich.createAlbum(album_dict)
     elif task == "deleteloop":
-         for iun in "2","3","4","5","1":
+         for iun in "2","3","4","5","1","6":
             init_user = init_users[iun]
             api_key = api_keys[init_user]
             rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
@@ -113,7 +114,9 @@ def init_album_build(rbimmich,init_user):
 
 def create_albums(rbimmich,album_dict,init_user,api_key):
     assetsReceived,AlbumUsers = init_album_build(rbimmich,init_user)
+    print("BUILDING FOR FOLDERS")
     user_album_dict = rbimmich.build_album_dict(assetsReceived,AlbumUsers,init_user,album_dict,api_key)
+    print("BUILDING FOR TAG")
     tag_album_dict = rbimmich.build_album_dict_by_tag(assetsReceived,AlbumUsers,init_user,user_album_dict,api_key)
     album_dict = tag_album_dict
 

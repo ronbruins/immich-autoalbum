@@ -101,16 +101,8 @@ class ImmichApi:
     def get_albums(self, id=""):
         album_list = {}
         album_list['album'] = {}
-        # api = "albums?shared=false"
-        # api="albums?shared=true"
-        # Hard Coded that only a specific album User will go through all existing albums
-        # While Individual Users only check their own owned albums
-        # Need to find way to make this dynamic
-        # if self.init_user == "Brunij":
-        #     api="albums?shared=true"
-        # else:
         api="albums"
-        url = self.base_url + api
+        # url = self.base_url + api
         album_ids = []
         admin = False
         body = {}
@@ -223,60 +215,44 @@ class ImmichApi:
                 album_locid = len(path) - 2
                 album = path[album_locid]
                 album = album.replace("_"," ")
-                procAlbum = album
-                if "#" in procAlbum:
-                    suffix = "#"
-                    procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
-                elif "@@" in album:
-                    suffix = "@@"
-                elif "@" in album:
-                    suffix = "@"
-                else:
-                    suffix = "SKIP"
-                
-                if suffix != "SKIP":
-                    procAlbum = procAlbum.replace(f" {suffix}","")
-                    if procAlbum not in album_dict:
-                        album_dict[procAlbum] = {}
-                        album_dict[procAlbum]['api_key'] = api_key
-                        album_dict[procAlbum]['assetIds'] = []
-                        album_dict[procAlbum]['albumUsers'] = []
-                        album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
-                    album_dict[procAlbum]['assetIds'].append(asset_id)
-
+                folder= True
+                self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
         return album_dict
-    
+
     def build_album_dict_by_tag(self, assetsReceived,AlbumUsers,init_user,album_dict,api_key):
         for asset in assetsReceived:
-            path = asset['originalPath']
             thumbhash = asset['thumbhash']
             if thumbhash != None:
                 asset_id = asset['id']
                 asset_info = self.get_asset_info(asset_id)
-                try:
-                    for tags in asset_info['tags']:
-                        album_tag = tags['name']
-
-                        album = album_tag
-                        procAlbum = album                        
-                        if "#" in procAlbum:
-                            suffix = "#"
-                            procAlbum = f"{album[:4]} Diverse Fotos"
-                        elif "@@" in album:
-                            suffix = "@@"
-                        elif "@" in album:
-                            suffix = "@"
-                        else:
-                            suffix = "DEFGHIJ"
-                        procAlbum = procAlbum.replace(f" {suffix}","")
-                        if procAlbum not in album_dict:
-                            album_dict[procAlbum] = {}
-                            album_dict[procAlbum]['api_key'] = api_key
-                            album_dict[procAlbum]['assetIds'] = []
-                            album_dict[procAlbum]['albumUsers'] = []
-                            album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
-                        album_dict[procAlbum]['assetIds'].append(asset_id)
-                        
-                except:
-                    pass
+                for tags in asset_info['tags']:
+                    album_tag = tags['name']
+                    album = album_tag
+                    folder=False
+                    self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
         return album_dict
+    
+
+    def build_album(self, album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder):
+        procAlbum = album                        
+        if "#" in procAlbum:
+            suffix = "#"
+            procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+        elif "@@" in album:
+            suffix = "@@"
+        elif "@" in album:
+            suffix = "@"
+        else:
+            if folder == True:
+                suffix = "SKIP"
+            else:
+                suffix = "#"
+        if suffix != "SKIP":        
+            procAlbum = procAlbum.replace(f" {suffix}","")
+            if procAlbum not in album_dict:
+                album_dict[procAlbum] = {}
+                album_dict[procAlbum]['api_key'] = api_key
+                album_dict[procAlbum]['assetIds'] = []
+                album_dict[procAlbum]['albumUsers'] = []
+                album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
+            album_dict[procAlbum]['assetIds'].append(asset_id)
