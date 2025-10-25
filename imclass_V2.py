@@ -98,26 +98,30 @@ class ImmichApi:
                 assets = assets + assetsReceived
         return assets
 
-    def get_albums(self, id=""):
+    def get_albums(self,id=""):
         album_list = {}
         album_list['album'] = {}
-        api="albums"
-        # url = self.base_url + api
-        album_ids = []
-        admin = False
-        body = {}
-        if id == "":
-            responseJson = self.call_api("GET", api, admin, body)
-            for album in responseJson:
-                album_name = album['albumName']
-                album_id = album['id']
-                album_ids.append(album_id)
-                album_list['album'][album_name]=album_id
-            return album_ids,album_list
-        else:
-            api = f"albums/{id}"
-            album_info = self.call_api("GET", api, admin, body)
-            return album_info
+        # api="albums?shared=true"
+        # api="albums"
+        for api in "albums", "albums?shared=true":
+            # url = self.base_url + api
+            print(f"AAAAAAAAA LOOOOOOPPPP {api}")
+            album_ids = []
+            admin = False
+            body = {}
+            if id == "":
+                responseJson = self.call_api("GET", api, admin, body)
+                for album in responseJson:
+                    album_name = album['albumName']
+                    album_id = album['id']
+                    album_ids.append(album_id)
+                    album_list['album'][album_name]=album_id
+                # return album_ids,album_list
+            else:
+                api = f"albums/{id}"
+                album_info = self.call_api("GET", api, admin, body)
+                return album_info
+        return album_ids,album_list
 
     def get_asset_info(self,asset_id):
         api = f"assets/{asset_id}"
@@ -134,16 +138,25 @@ class ImmichApi:
             # print(libraries)
             return libraries
 
-    def createAlbum(self, album_dict):
-        album_ids,album_list = self.get_albums()
+    def createAlbum(self, album_dict,album_final):
+        # album_list = {}
+        # album_ids,album_list = self.get_albums(album_list)
         for albumName,albumDetails in album_dict.items():
             assetIds = album_dict[albumName]['assetIds']
             AlbumUsers = album_dict[albumName]['albumUsers']
             own_api_key = album_dict[albumName]['api_key']
 
             api = "albums"
-     
-            if albumName not in album_list['album']:
+            print(f"###{albumName}###")
+            # print(json.dumps(album_list['album']))
+            # for k,v in album_final['album'].items():
+            # for k,v in album_final.items():
+            #     print(k)
+
+            # if albumName not in album_final['album']:
+            if albumName not in album_final:
+                
+                print("Album -NOT FOUND- ")
                 if albumName != None:
                     body = {
                     'albumName': albumName,
@@ -167,7 +180,9 @@ class ImmichApi:
                         debugresp = self.call_api("PUT", api, admin, payload, own_api_key)
 
             else:
-                AlbumId = album_list['album'][albumName]
+                print("Album -FOUND-")
+                # AlbumId = album_final['album'][albumName]
+                AlbumId = album_final[albumName]
                 api = f"albums/{AlbumId}/assets"
                 print(f"UPDATING {albumName} for API: {own_api_key}")
                 body = {
@@ -225,11 +240,14 @@ class ImmichApi:
             if thumbhash != None:
                 asset_id = asset['id']
                 asset_info = self.get_asset_info(asset_id)
-                for tags in asset_info['tags']:
-                    album_tag = tags['name']
-                    album = album_tag
-                    folder=False
-                    self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                try:
+                    for tags in asset_info['tags']:
+                        album_tag = tags['name']
+                        album = album_tag
+                        folder=False
+                        self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                except:
+                    pass
         return album_dict
     
 

@@ -54,29 +54,37 @@ init_users['6'] = "Sandra Veld"
 
 # rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
 album_dict = {}
+
 task == "debug"
 def main():
+    album_list = {}
+    album_final = dict(album_list)
     # os.system('clear')
     # warn()
     if task == "debug":
         print(rbimmich.get_albums())
     elif task == "create":
         album_dict={}
-        create_albums(album_dict)
+        create_albums(album_dict,album_list)
     elif task == "loop":
         album_dict={}
+        # album_list = {}
         for iun in "2","3","4","5","1","6":
-        # for iun in "4":
             init_user = init_users[iun]
             api_key = api_keys[init_user]
             rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+            album_ids,album_list = rbimmich.get_albums()
             create_albums(rbimmich,album_dict,init_user,api_key)
+            
+            album_final.update(album_list['album'])
+        # print(json.dumps(album_final))
+        
         sorted_data_keys = json.dumps({k: album_dict[k] for k in sorted(album_dict)})
         album_dict = json.loads(sorted_data_keys)
         for k,v in album_dict.items():
             print(k, album_dict[k]['api_key'])
-        
-        rbimmich.createAlbum(album_dict)
+        # print(album_dict)
+        rbimmich.createAlbum(album_dict,album_final)
     elif task == "deleteloop":
          for iun in "2","3","4","5","1","6":
             init_user = init_users[iun]
