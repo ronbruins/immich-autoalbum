@@ -118,7 +118,7 @@ class ImmichApi:
         print(" ")
         return assets
 
-    def get_albums(self,id=""):
+    def get_albums(self,local,id=""):
         album_list = {}
         album_list['album'] = {}
         # api="albums?shared=true"
@@ -126,8 +126,14 @@ class ImmichApi:
         print(" ")
         print(f"Get albums for call:\t \t \t", end=" ")
         album_ids = []
-        for api in "albums", "albums?shared=true":
-            # url = self.base_url + api
+        # for api in "albums", "albums?shared=true":
+        # api = "albums"
+        if local == False:
+            call = ["albums","albums?shared=true"]
+        else: 
+            call = ["albums"]
+        for api in call:
+        # url = self.base_url + api
             print(f"{api}", end=" ")
             
             admin = False
@@ -139,6 +145,8 @@ class ImmichApi:
                     album_id = album['id']
                     album_ids.append(album_id)
                     album_list['album'][album_name]=album_id
+                    # updatedAt = album['updatedAt']
+                    # print(updatedAt)
                 # return album_ids,album_list
             else:
                 api = f"albums/{id}"
@@ -298,3 +306,20 @@ class ImmichApi:
                 album_dict[procAlbum]['albumUsers'] = []
                 album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
             album_dict[procAlbum]['assetIds'].append(asset_id)
+
+    def update_albums(self,update_album_dict):
+        for albumname in update_album_dict:
+            album_id = update_album_dict[albumname]['album_id']
+            own_api_key = update_album_dict[albumname]['api_key']
+
+            # print(albumname, album_id,own_api_key)
+            api = f"albums/{album_id}"
+            body = {
+                    "description": "rontest"
+                }
+            admin = False
+            payload=json.dumps(body)
+            self.call_api("PATCH", api, admin, payload,own_api_key)
+            print(f"Updated: {albumname} {own_api_key}")
+
+            

@@ -26,6 +26,7 @@ asset_limit = 1000
 # task="create_by_tag"
 # task="create"
 task="loop"
+# task="updateloop"
 # task="libloop"
 # task="deleteloop"
 # task="delete"
@@ -54,7 +55,6 @@ init_users['6'] = "Sandra Veld"
 
 # rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
 album_dict = {}
-
 task == "debug"
 def main():
     album_list = {}
@@ -67,25 +67,42 @@ def main():
         album_dict={}
         create_albums(album_dict,album_list)
     elif task == "loop":
-
         album_dict={}
         # album_list = {}
         for iun in "2","3","4","5","1","6":
             init_user = init_users[iun]
             api_key = api_keys[init_user]
             rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
-            album_ids,album_list = rbimmich.get_albums()
+            local = False
+            album_ids,album_list = rbimmich.get_albums(local)
             create_albums(rbimmich,album_dict,init_user,api_key)
-            
             album_final.update(album_list['album'])
-        # print(json.dumps(album_final))
         
         sorted_data_keys = json.dumps({k: album_dict[k] for k in sorted(album_dict)})
         album_dict = json.loads(sorted_data_keys)
         for k,v in album_dict.items():
             print(k)
-        # print(album_dict)
         rbimmich.createAlbum(album_dict,album_final)
+        update_album_dict = {}
+        for iun in "2","3","4","5","1","6":
+            init_user = init_users[iun]
+            api_key = api_keys[init_user]
+            rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+            local=True
+            album_ids,album_list = rbimmich.get_albums(local)
+
+            for albumname in album_list['album']:
+                album_id = album_list['album'][albumname]
+                update_album_dict[albumname]={}
+                update_album_dict[albumname]['album_id']=album_id
+                update_album_dict[albumname]['api_key']=api_key
+                print(albumname, api_key)
+        sorted_data_keys = json.dumps({k: update_album_dict[k] for k in sorted(update_album_dict)})
+        update_album_dict = json.loads(sorted_data_keys)
+        
+        update_albums = rbimmich.update_albums(update_album_dict)
+
+        
     elif task == "deleteloop":
          for iun in "2","3","4","5","1","6":
             init_user = init_users[iun]
@@ -100,11 +117,32 @@ def main():
             # delete_albums(rbimmich)
             libraries = rbimmich.get_libraries() 
             print(json.dumps(libraries))
+    elif task == "updateloop":
+        update_album_dict = {}
+        for iun in "2","3","4","5","1","6":
+            init_user = init_users[iun]
+            api_key = api_keys[init_user]
+            rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+            local=True
+            album_ids,album_list = rbimmich.get_albums(local)
+
+            for albumname in album_list['album']:
+                album_id = album_list['album'][albumname]
+                update_album_dict[albumname]={}
+                update_album_dict[albumname]['album_id']=album_id
+                update_album_dict[albumname]['api_key']=api_key
+                print(albumname, api_key)
+        sorted_data_keys = json.dumps({k: update_album_dict[k] for k in sorted(update_album_dict)})
+        update_album_dict = json.loads(sorted_data_keys)
+        
+        update_albums = rbimmich.update_albums(update_album_dict)
+
 
 
 def delete_albums(rbimmich):
     # bug: delete albums tries to delete all albums, because of share option in get album method, needs to be checked
-    album_ids,album_list = rbimmich.get_albums()
+    local=False
+    album_ids,album_list = rbimmich.get_albums(local)
     # print(album_ids,album_list['album'])
     for album_id in album_ids:
         print(f"deleting {album_id}")
