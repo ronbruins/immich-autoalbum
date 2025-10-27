@@ -125,10 +125,11 @@ class ImmichApi:
         # api="albums"
         print(" ")
         print(f"Get albums for call:\t \t \t", end=" ")
+        album_ids = []
         for api in "albums", "albums?shared=true":
             # url = self.base_url + api
             print(f"{api}", end=" ")
-            album_ids = []
+            
             admin = False
             body = {}
             if id == "":
