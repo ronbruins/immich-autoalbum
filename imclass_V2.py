@@ -1,8 +1,25 @@
 import requests
 import json
 
+
+        # RED = '\033[31m'
+        # GREEN = '\033[32m'
+        # YELLOW = '\033[33m'
+        # RESET = '\033[0m' # Resets all formatting
+
+        # print(f"{RED}This text is red.{RESET}")
+        # print(f"{GREEN}This text is green and {YELLOW}this part is yellow.{RESET}")
+        # print("This text is back to default color.")
+
+
 class ImmichApi:
     def __init__(self,api_key,base_url,init_user,admin_api):
+        self.RED = '\033[31m'
+        self.GREEN = '\033[32m'
+        self.YELLOW = '\033[33m'
+        self.RESET = '\033[0m' # Resets all formatting
+
+
         self.api_key = api_key
         self.base_url = base_url
         self.init_user = init_user
@@ -38,7 +55,7 @@ class ImmichApi:
             else:
                 r = requests.request(method, url, headers=self.headers, data=body)
         else:
-            print(f"@@@@@  ADMIN HEADERS @@@@@@ {self.admin_headers}")
+            print(f"Using Admin Headers: \t \t \t {self.admin_headers}")
             r = requests.request(method, url, headers=self.admin_headers, data=body)
             responseJson = r.json()
             return responseJson
@@ -72,7 +89,7 @@ class ImmichApi:
         headers = {
         'x-api-key': f'{self.api_key}'
         }
-        print(self.api_key)
+        print(f"API-KEY: \t \t \t \t {self.api_key}")
         body = {}
         body['isNotInAlbum'] = 'true'
         body['size'] = asset_limit
@@ -86,7 +103,8 @@ class ImmichApi:
         page = 1
         assetsReceived = responseJson['assets']['items']
         assets = assets + assetsReceived
-        print(f"Received {len(assetsReceived)} assets with chunk {page}")
+        print(f"Received {len(assetsReceived)} assets with chunk {page}", end=" ")
+        # print("Hello", end=" ")
         while len(assetsReceived) == 1000:
                 page += 1
                 body['page'] = page
@@ -94,8 +112,10 @@ class ImmichApi:
                 admin = False
                 responseJson = self.call_api("POST", api, admin, payload)
                 assetsReceived = responseJson['assets']['items']
-                print(f"Received {len(assetsReceived)} assets with chunk {page}")
+                # print(f"Received {len(assetsReceived)} assets with chunk {page}")
+                print(f"{page}", end=" ")
                 assets = assets + assetsReceived
+        print(" ")
         return assets
 
     def get_albums(self,id=""):
@@ -103,9 +123,11 @@ class ImmichApi:
         album_list['album'] = {}
         # api="albums?shared=true"
         # api="albums"
+        print(" ")
+        print(f"Get albums for call:\t \t \t", end=" ")
         for api in "albums", "albums?shared=true":
             # url = self.base_url + api
-            print(f"AAAAAAAAA LOOOOOOPPPP {api}")
+            print(f"{api}", end=" ")
             album_ids = []
             admin = False
             body = {}
@@ -121,6 +143,7 @@ class ImmichApi:
                 api = f"albums/{id}"
                 album_info = self.call_api("GET", api, admin, body)
                 return album_info
+        print(" ")
         return album_ids,album_list
 
     def get_asset_info(self,asset_id):
@@ -156,7 +179,7 @@ class ImmichApi:
             # if albumName not in album_final['album']:
             if albumName not in album_final:
                 
-                print("Album -NOT FOUND- ")
+                print(f"Album {self.RED}-NOT FOUND-{self.RESET} ")
                 if albumName != None:
                     body = {
                     'albumName': albumName,
@@ -180,7 +203,7 @@ class ImmichApi:
                         debugresp = self.call_api("PUT", api, admin, payload, own_api_key)
 
             else:
-                print("Album -FOUND-")
+                print(f"Album {self.GREEN}-FOUND-{self.RESET}")
                 # AlbumId = album_final['album'][albumName]
                 AlbumId = album_final[albumName]
                 api = f"albums/{AlbumId}/assets"
@@ -195,7 +218,7 @@ class ImmichApi:
     def build_album_users(self,immich_users,init_user,to_share):
         AlbumUsers = {}
         AlbumUsers[init_user] = {}
-        print(f"Building Albums and shares for user: {init_user}")
+        print(f"Building Albums and shares for user: \t {self.YELLOW}{init_user}{self.RESET}")
         for line in to_share[init_user]:
             AlbumUsers[init_user][line] = []        
             for user in immich_users:
@@ -217,7 +240,7 @@ class ImmichApi:
                 lib_name = library['name']
                 if "Video" not in lib_name:
                     search_lib = library['id']              
-                    print(f"Name: {lib_name}")
+                    print(f"Library Path:\t \t \t \t {lib_name}")
         return search_lib
     
     def build_album_dict(self, assetsReceived,AlbumUsers,init_user, album_dict,api_key):

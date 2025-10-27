@@ -67,6 +67,7 @@ def main():
         album_dict={}
         create_albums(album_dict,album_list)
     elif task == "loop":
+
         album_dict={}
         # album_list = {}
         for iun in "2","3","4","5","1","6":
@@ -84,7 +85,7 @@ def main():
         for k,v in album_dict.items():
             print(k, album_dict[k]['api_key'])
         # print(album_dict)
-        rbimmich.createAlbum(album_dict,album_final)
+        # rbimmich.createAlbum(album_dict,album_final)
     elif task == "deleteloop":
          for iun in "2","3","4","5","1","6":
             init_user = init_users[iun]
@@ -110,9 +111,11 @@ def delete_albums(rbimmich):
         rbimmich.delete_album(album_id)
     
 def init_album_build(rbimmich,init_user):
+    YELLOW = '\033[33m'
+    RESET = '\033[0m'
     immich_users = rbimmich.get_users()
     AlbumUsers,set_user_id = rbimmich.build_album_users(immich_users,init_user,to_share)
-    print(f"User: {set_user_id}")
+    print(f"User ID: \t \t \t \t {set_user_id}")
     libraries = rbimmich.get_libraries() 
     search_lib = rbimmich.get_search_lib(set_user_id,libraries)
     assetsReceived = rbimmich.get_assets(asset_limit,search_lib)
@@ -122,9 +125,9 @@ def init_album_build(rbimmich,init_user):
 
 def create_albums(rbimmich,album_dict,init_user,api_key):
     assetsReceived,AlbumUsers = init_album_build(rbimmich,init_user)
-    print("BUILDING FOR FOLDERS")
+    print("Initializing Folders build")
     user_album_dict = rbimmich.build_album_dict(assetsReceived,AlbumUsers,init_user,album_dict,api_key)
-    print("BUILDING FOR TAG")
+    print("Initializing Tags build")
     tag_album_dict = rbimmich.build_album_dict_by_tag(assetsReceived,AlbumUsers,init_user,user_album_dict,api_key)
     album_dict = tag_album_dict
 
