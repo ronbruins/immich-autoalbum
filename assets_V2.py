@@ -96,13 +96,13 @@ def main():
                 update_album_dict[albumname]={}
                 update_album_dict[albumname]['album_id']=album_id
                 update_album_dict[albumname]['api_key']=api_key
-                print(albumname, api_key)
+                # print(albumname, api_key)
         sorted_data_keys = json.dumps({k: update_album_dict[k] for k in sorted(update_album_dict)})
         update_album_dict = json.loads(sorted_data_keys)
         
         update_albums = rbimmich.update_albums(update_album_dict)
 
-        
+
     elif task == "deleteloop":
          for iun in "2","3","4","5","1","6":
             init_user = init_users[iun]
