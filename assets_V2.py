@@ -25,9 +25,9 @@ asset_limit = 1000
 # task="geo_create"
 # task="create_by_tag"
 # task="create"
-# task="loop"
+task="loop"
 # task="libloop"
-task="deleteloop"
+# task="deleteloop"
 # task="delete"
 #task="getassetinfo"
 #task="debug"
@@ -83,9 +83,9 @@ def main():
         sorted_data_keys = json.dumps({k: album_dict[k] for k in sorted(album_dict)})
         album_dict = json.loads(sorted_data_keys)
         for k,v in album_dict.items():
-            print(k, album_dict[k]['api_key'])
+            print(k)
         # print(album_dict)
-        # rbimmich.createAlbum(album_dict,album_final)
+        rbimmich.createAlbum(album_dict,album_final)
     elif task == "deleteloop":
          for iun in "2","3","4","5","1","6":
             init_user = init_users[iun]
