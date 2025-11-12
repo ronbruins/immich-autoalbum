@@ -117,6 +117,20 @@ class ImmichApi:
                 assets = assets + assetsReceived
         print(" ")
         return assets
+    
+    def gettags(self):
+        api = "tags"
+        # url = self.base_url + api
+        admin = False
+        body = {}
+        taglist = self.call_api("GET", api, admin, body)
+        return taglist
+        # taglist = json.dumps(r)
+        # print(r.text)
+        # for a in r.json:
+        #     print(a)
+
+
 
     def get_albums(self,local,id=""):
         album_list = {}
@@ -287,6 +301,9 @@ class ImmichApi:
         procAlbum = album                        
         if "#" in procAlbum:
             suffix = "#"
+            procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+        if "$" in procAlbum:
+            suffix = "$"
             procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
         elif "@@" in album:
             suffix = "@@"
