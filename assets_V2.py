@@ -44,10 +44,10 @@ asset_limit = 1000
 
 
 # task="createloop"
-# task="updateloop"
+task="updateloop"
 # task="libloop"
 # task="tagloop"
-task="deleteloop"
+# task="deleteloop"
 
 
 init_users = settings.init_users
@@ -75,7 +75,7 @@ def main():
     elif task == "libloop":
          tasks.libloop(user_exec)
     elif task == "updateloop":
-        update_album_list()
+        tasks.update_album_list(user_exec)
 
 
 def createloop():
@@ -97,27 +97,6 @@ def createloop():
     for k,v in album_dict.items():
         print(k)
     rbimmich.createAlbum(album_dict,album_final)    
-
-def update_album_list():
-    update_album_dict = {}
-    for iun in user_exec:
-        init_user = init_users[iun]
-        api_key = api_keys[init_user]
-        rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
-        local=True
-        album_ids,album_list = rbimmich.get_albums(local)
-
-        for albumname in album_list['album']:
-            album_id = album_list['album'][albumname]
-            update_album_dict[albumname]={}
-            update_album_dict[albumname]['album_id']=album_id
-            update_album_dict[albumname]['api_key']=api_key
-            # print(albumname, api_key)
-    sorted_data_keys = json.dumps({k: update_album_dict[k] for k in sorted(update_album_dict)})
-    update_album_dict = json.loads(sorted_data_keys)
-    
-    update_albums = rbimmich.update_albums(update_album_dict)
-
 
 def init_album_build(rbimmich,init_user):
     YELLOW = '\033[33m'
