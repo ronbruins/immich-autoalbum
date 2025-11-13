@@ -33,3 +33,14 @@ def tagloop(user_exec):
         # print(taglist)
         for a in taglist:
             print(a)   
+
+def deleteloop(user_exec):
+    for iun in user_exec:
+        init_user = init_users[iun]
+        api_key = api_keys[init_user]
+        rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+        local=False
+        album_ids,album_list = rbimmich.get_albums(local)
+        for album_id in album_ids:
+            print(f"deleting {album_id}")
+            # rbimmich.delete_album(album_id)
