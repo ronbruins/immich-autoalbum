@@ -45,8 +45,8 @@ asset_limit = 1000
 
 # task="createloop"
 # task="updateloop"
-task="libloop"
-# task="tagloop"
+# task="libloop"
+task="tagloop"
 # task="deleteloop"
 
 
@@ -71,7 +71,7 @@ def main():
     elif task == "deleteloop":
         deleteloop()
     elif task == "tagloop":
-         get_tag_list()
+         tasks.tagloop(user_exec)
     elif task == "libloop":
          tasks.libloop(user_exec)
     elif task == "updateloop":
@@ -108,17 +108,6 @@ def deleteloop():
         for album_id in album_ids:
             print(f"deleting {album_id}")
             # rbimmich.delete_album(album_id)
-
-def get_tag_list():
-    for iun in user_exec:
-        #  for iun in "1":
-        init_user = init_users[iun]
-        api_key = api_keys[init_user]
-        rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
-        taglist = rbimmich.gettags()
-        # print(taglist)
-        for a in taglist:
-            print(a)    
 
 def update_album_list():
     update_album_dict = {}

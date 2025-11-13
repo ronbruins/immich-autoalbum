@@ -21,3 +21,15 @@ def libloop(user_exec):
         rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
         libraries = rbimmich.get_libraries() 
         print(json.dumps(libraries))
+
+
+def tagloop(user_exec):
+    for iun in user_exec:
+        #  for iun in "1":
+        init_user = init_users[iun]
+        api_key = api_keys[init_user]
+        rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+        taglist = rbimmich.gettags()
+        # print(taglist)
+        for a in taglist:
+            print(a)   
