@@ -98,17 +98,6 @@ def createloop():
         print(k)
     rbimmich.createAlbum(album_dict,album_final)    
 
-# def deleteloop():
-#     for iun in user_exec:
-#         init_user = init_users[iun]
-#         api_key = api_keys[init_user]
-#         rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
-#         local=False
-#         album_ids,album_list = rbimmich.get_albums(local)
-#         for album_id in album_ids:
-#             print(f"deleting {album_id}")
-#             # rbimmich.delete_album(album_id)
-
 def update_album_list():
     update_album_dict = {}
     for iun in user_exec:
@@ -129,17 +118,6 @@ def update_album_list():
     
     update_albums = rbimmich.update_albums(update_album_dict)
 
-
-
-def gettags(rbimmich):
-    # bug: delete albums tries to delete all albums, because of share option in get album method, needs to be checked
-    local=False
-    taglist = rbimmich.gettags()
-
-    # print(album_ids,album_list['album'])
-    # for album_id in album_ids:
-    #     print(f"deleting {album_id}")
-    #     rbimmich.delete_album(album_id)
 
 def init_album_build(rbimmich,init_user):
     YELLOW = '\033[33m'
