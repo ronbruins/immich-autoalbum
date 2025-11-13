@@ -1,5 +1,4 @@
 import json
-
 import imclass_V2
 import settings
 
@@ -12,11 +11,11 @@ album_id = settings.album_id
 admin_api = settings.admin_api
 assetid=settings.assetid
 init_users = settings.init_users
+asset_limit = settings.asset_limit
+YELLOW =  settings.YELLOW
+RESET = settings.RESET
 
 
-YELLOW = '\033[33m'
-RESET = '\033[0m'
-asset_limit = 1000
 
 def libloop(user_exec):
     for iun in user_exec:
@@ -25,7 +24,6 @@ def libloop(user_exec):
         rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
         libraries = rbimmich.get_libraries() 
         print(json.dumps(libraries))
-
 
 def tagloop(user_exec):
     for iun in user_exec:
