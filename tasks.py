@@ -12,9 +12,8 @@ admin_api = settings.admin_api
 assetid=settings.assetid
 init_users = settings.init_users
 asset_limit = settings.asset_limit
-YELLOW =  settings.YELLOW
-RESET = settings.RESET
-
+# YELLOW =  settings.YELLOW
+# RESET = settings.RESET
 
 
 def libloop(user_exec):
@@ -33,8 +32,22 @@ def tagloop(user_exec):
         rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
         taglist = rbimmich.gettags()
         # print(taglist)
-        for a in taglist:
-            print(a)   
+        # for a in taglist:
+        #     print(a['id'])   
+        return taglist
+
+def tagdelete(user_exec):
+    for iun in user_exec:
+        init_user = init_users[iun]
+        api_key = api_keys[init_user]
+        rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+        taglist = rbimmich.gettags()
+        for tag in taglist:
+            tag_id=tag['id']
+            print(f"deleting {tag_id}")
+            rbimmich.delete_tags(tag_id)
+
+
 
 def deleteloop(user_exec):
     for iun in user_exec:
@@ -45,7 +58,7 @@ def deleteloop(user_exec):
         album_ids,album_list = rbimmich.get_albums(local)
         for album_id in album_ids:
             print(f"deleting {album_id}")
-            # rbimmich.delete_album(album_id)
+            rbimmich.delete_album(album_id)
 
 def update_album_list(user_exec):
     update_album_dict = {}
@@ -81,8 +94,6 @@ def createloop(user_exec):
         # create_albums(rbimmich,album_dict,init_user,api_key)
         # assetsReceived,AlbumUsers = init_album_build(rbimmich,init_user)
 
-        YELLOW = '\033[33m'
-        RESET = '\033[0m'
         immich_users = rbimmich.get_users()
         AlbumUsers,set_user_id = rbimmich.build_album_users(immich_users,init_user,to_share)
         print(f"User ID: \t \t \t \t {set_user_id}")

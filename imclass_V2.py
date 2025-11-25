@@ -81,6 +81,13 @@ class ImmichApi:
         body = {}
         self.call_api("DELETE", api, admin, body)
 
+    def delete_tags(self,tag_id):
+        api = f"tags/{tag_id}"
+        admin = False
+        body = {}
+        print(f"DELETE, {api}, {admin}, {body})")
+        self.call_api("DELETE", api, admin, body)
+
     def get_assets(self,asset_limit,search_lib):
         assets = []
         api = "search/metadata"
@@ -288,10 +295,11 @@ class ImmichApi:
                 asset_info = self.get_asset_info(asset_id)
                 try:
                     for tags in asset_info['tags']:
-                        album_tag = tags['name']
-                        album = album_tag
-                        folder=False
-                        self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                        if tags['name'].startswith("20"):
+                            album_tag = tags['name']
+                            album = album_tag
+                            folder=False
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
                 except:
                     pass
         return album_dict

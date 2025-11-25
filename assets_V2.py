@@ -1,17 +1,17 @@
 import os
-import settings
+# import settings
 import tasks
 
 os.system('clear')
 
-task="createloop"
+# task="createloop"
 # task="updateloop"
 # task="libloop"
 # task="tagloop"
+task="tagdelete"
 # task="deleteloop"
 
-# init_users = settings.init_users
-# iun = "1"
+
 '''
 init_users['1'] = "Ron Bruins"
 init_users['2'] = "Ron Mirjam"
@@ -21,6 +21,8 @@ init_users['5'] = "Thibault Bruins"
 init_users['6'] = "Sandra Veld"
 '''
 
+# user_exec=["5"]
+# user_exec=["1"]
 user_exec=["2","3","4","5","1","6"]
 # album_dict = {}
 task == "debug"
@@ -36,6 +38,8 @@ def main():
          tasks.libloop(user_exec)
     elif task == "updateloop":
         tasks.update_album_list(user_exec)
+    elif task == "tagdelete":
+        tasks.tagdelete(user_exec)
 
 
 # def warn(init_user):
