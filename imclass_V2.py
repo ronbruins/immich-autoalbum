@@ -102,7 +102,7 @@ class ImmichApi:
         body['size'] = asset_limit
         if search_lib != "":
             print("Using single library owned by user")
-            body['libraryId'] = search_lib
+            # body['libraryId'] = search_lib
         admin = False
         payload=json.dumps(body)
         responseJson = self.call_api("POST", api, admin, payload)
@@ -222,7 +222,8 @@ class ImmichApi:
                     album_data = self.call_api("POST", api, admin, payload,own_api_key)
                     AlbumUsers = album_dict[albumName]['albumUsers']
                     if AlbumUsers != []:
-                        print(f"Sharing {albumName} with {AlbumUsers} for API: {own_api_key}")
+                        # print(f"Sharing {albumName} with {AlbumUsers} for API: {own_api_key}")
+                        print(f"Sharing {albumName}")
                         album_id = album_data['id']
                         body = {
                         'albumUsers': AlbumUsers
@@ -241,6 +242,7 @@ class ImmichApi:
                 body = {
                     "ids": assetIds,
                 }
+                # print(body)
                 admin = False
                 payload=json.dumps(body)
                 self.call_api("PUT", api, admin, payload,own_api_key)
@@ -289,9 +291,13 @@ class ImmichApi:
 
     def build_album_dict_by_tag(self, assetsReceived,AlbumUsers,init_user,album_dict,api_key):
         for asset in assetsReceived:
+            path = asset['originalPath']
             thumbhash = asset['thumbhash']
             if thumbhash != None:
                 asset_id = asset['id']
+                path = path.split("/")
+                album_locid = len(path) - 2
+                album_tag_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
                 try:
                     for tags in asset_info['tags']:
@@ -300,6 +306,16 @@ class ImmichApi:
                             album = album_tag
                             folder=False
                             self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                        elif tags['name'].startswith("4"):
+                            ron=True
+                        else:
+                            album_tag = tags['name']
+                            album = album_tag
+                            album_prefix_test = f"{album_tag_prefix} {album_tag}"
+                            # print(f"this album would have been named {album_prefix_test}")
+                            folder=False
+                            
+                            self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
                 except:
                     pass
         return album_dict
@@ -345,6 +361,6 @@ class ImmichApi:
             admin = False
             payload=json.dumps(body)
             self.call_api("PATCH", api, admin, payload,own_api_key)
-            print(f"Updated: {albumname} {own_api_key}")
+            # print(f"Updated: {albumname} {own_api_key}")
 
             

@@ -4,11 +4,11 @@ import tasks
 
 os.system('clear')
 
-# task="createloop"
+task="createloop"
 # task="updateloop"
 # task="libloop"
 # task="tagloop"
-task="tagdelete"
+# task="tagdelete"
 # task="deleteloop"
 
 
@@ -22,8 +22,8 @@ init_users['6'] = "Sandra Veld"
 '''
 
 # user_exec=["5"]
-# user_exec=["1"]
-user_exec=["2","3","4","5","1","6"]
+# user_exec=["4"]
+user_exec=["2","3","4","5","9","1"]
 # album_dict = {}
 task == "debug"
 def main():
