@@ -200,20 +200,40 @@ class ImmichApi:
             own_api_key = album_dict[albumName]['api_key']
 
             api = "albums"
-            print(f"###{albumName}###")
+            print(f"### Working on '{albumName}' build ###")
             # print(json.dumps(album_list['album']))
             # for k,v in album_final['album'].items():
             # for k,v in album_final.items():
             #     print(k)
 
             # if albumName not in album_final['album']:
+            if "_" in albumName or "#" in albumName or "$" in albumName:
+                assetdates = album_dict[albumName]['assetDates']
+                assetdates.sort()
+                # print(assetdates)
+                albumdatecheck = min(album_dict[albumName]['assetDates'])[:10]
+                # print(albumdatecheck)
+                # print(max(albumdatecheck))
+                # album[:4]}
+                # albumName = albumName.replace(f" _","")
+
+                print(f"{albumdatecheck} {albumName}")
+                if "#" in albumName or "$" in albumName:
+                    albumConsName = f"{albumdatecheck}{albumName[4:]}"
+                else:
+                    albumConsName = f"{albumdatecheck}{albumName}"
+                albumConsName = albumConsName.replace(f" _","")
+                albumConsName = albumConsName.replace(f" #","")
+                albumConsName = albumConsName.replace(f" $","")
+            else:
+                albumConsName = albumName
+
             if albumName not in album_final:
-                
                 print(f"Album {self.RED}-NOT FOUND-{self.RESET} ")
                 if albumName != None:
                     body = {
-                    'albumName': albumName,
-                    'description': albumName,
+                    'albumName': albumConsName,
+                    'description': albumConsName,
                     "assetIds": assetIds,
                     }
                     payload = json.dumps(body)
@@ -223,7 +243,7 @@ class ImmichApi:
                     AlbumUsers = album_dict[albumName]['albumUsers']
                     if AlbumUsers != []:
                         # print(f"Sharing {albumName} with {AlbumUsers} for API: {own_api_key}")
-                        print(f"Sharing {albumName}")
+                        print(f"Sharing {albumConsName}")
                         album_id = album_data['id']
                         body = {
                         'albumUsers': AlbumUsers
@@ -238,7 +258,7 @@ class ImmichApi:
                 # AlbumId = album_final['album'][albumName]
                 AlbumId = album_final[albumName]
                 api = f"albums/{AlbumId}/assets"
-                print(f"UPDATING {albumName} for API: {own_api_key}")
+                print(f"UPDATING {albumConsName} for API: {own_api_key}")
                 body = {
                     "ids": assetIds,
                 }
@@ -279,6 +299,7 @@ class ImmichApi:
         for asset in assetsReceived:
             path = asset['originalPath']
             thumbhash = asset['thumbhash']
+            asset_date = ""
             if thumbhash != None:
                 asset_id = asset['id']
                 path = path.split("/")
@@ -286,49 +307,63 @@ class ImmichApi:
                 album = path[album_locid]
                 album = album.replace("_"," ")
                 folder= True
-                self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
         return album_dict
 
     def build_album_dict_by_tag(self, assetsReceived,AlbumUsers,init_user,album_dict,api_key):
         for asset in assetsReceived:
             path = asset['originalPath']
             thumbhash = asset['thumbhash']
+
             if thumbhash != None:
                 asset_id = asset['id']
                 path = path.split("/")
                 album_locid = len(path) - 2
-                album_tag_prefix = path[album_locid]
+                # album_path_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
+                asset_date = asset_info['fileCreatedAt']
+                album_year_tag_prefix = asset_info['fileCreatedAt'][:4]
+                album_path_prefix = asset_info['fileCreatedAt'][:10]
+                # print(asset_info)
                 try:
                     for tags in asset_info['tags']:
                         if tags['name'].startswith("20"):
                             album_tag = tags['name']
                             album = album_tag
                             folder=False
-                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                         elif tags['name'].startswith("4"):
                             ron=True
                         else:
                             album_tag = tags['name']
+                            if "@" in album_tag:
+                                album_prefix = album_path_prefix
+                            else:
+                                album_prefix = album_year_tag_prefix
                             album = album_tag
-                            album_prefix_test = f"{album_tag_prefix} {album_tag}"
+                            album_prefix_test = f"{album_prefix} {album_tag}"
                             # print(f"this album would have been named {album_prefix_test}")
                             folder=False
                             
-                            self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                 except:
                     pass
         return album_dict
     
 
-    def build_album(self, album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder):
+    def build_album(self, album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder):
         procAlbum = album                        
         if "#" in procAlbum:
             suffix = "#"
-            procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            # procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            # procAlbum = f"{album[10:]}" #consolidate album into year and description
         if "$" in procAlbum:
             suffix = "$"
-            procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            # procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            # procAlbum = f"{album[10:]}" #consolidate album into year and description
+        if "_" in procAlbum:
+            suffix = "$"
+            # procAlbum = f"{album[10:]}" #consolidate album into year and description
         elif "@@" in album:
             suffix = "@@"
         elif "@" in album:
@@ -338,15 +373,18 @@ class ImmichApi:
                 suffix = "SKIP"
             else:
                 suffix = "#"
-        if suffix != "SKIP":        
-            procAlbum = procAlbum.replace(f" {suffix}","")
+        if suffix != "SKIP":   
+            if "@" in suffix:     
+                procAlbum = procAlbum.replace(f" {suffix}","")
             if procAlbum not in album_dict:
                 album_dict[procAlbum] = {}
                 album_dict[procAlbum]['api_key'] = api_key
                 album_dict[procAlbum]['assetIds'] = []
                 album_dict[procAlbum]['albumUsers'] = []
+                album_dict[procAlbum]['assetDates'] = []
                 album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
             album_dict[procAlbum]['assetIds'].append(asset_id)
+            album_dict[procAlbum]['assetDates'].append(asset_date)
 
     def update_albums(self,update_album_dict):
         for albumname in update_album_dict:
