@@ -25,6 +25,6 @@ jobs:
           sshpass -p '${{ secrets.PWD }}' ssh -v -p 2280 -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
           touch /tmp/git_deploy_4
           #cd /volume1/data/Development/immich-autoalbum
-          cd /home/ron/git
-          git pull
+          # cd /home/ron/git
+          # git pull
           ENDSSH
