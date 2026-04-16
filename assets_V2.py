@@ -4,8 +4,8 @@ import tasks
 
 os.system('clear')
 
-task="createloop"
-# task="updateloop"
+# task="createloop"
+task="updateloop"
 # task="libloop"
 # task="tagloop"
 # task="tagdelete"
@@ -33,12 +33,12 @@ def main():
         tasks.update_album_list(user_exec)
     elif task == "deleteloop":
         tasks.deleteloop(user_exec)
-    elif task == "tagloop":
-         tasks.tagloop(user_exec)
-    elif task == "libloop":
-         tasks.libloop(user_exec)
-    elif task == "updateloop":
-        tasks.update_album_list(user_exec)
+    elif task == "tagloop":                         # NEW
+         tasks.mainexecutor(user_exec,task)         # NEW
+    elif task == "libloop":                         # NEW
+         tasks.mainexecutor(user_exec,task)         # NEW
+    elif task == "updateloop":                      # NEW
+        tasks.mainexecutor(user_exec,task)          # NEW
     elif task == "tagdelete":
         tasks.tagdelete(user_exec)
 
