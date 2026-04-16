@@ -4,9 +4,9 @@ import tasks
 
 os.system('clear')
 
-# task="createloop"
+task="createloop"
 # task="updateloop"
-task="libloop"
+# task="libloop"
 # task="tagloop"
 # task="tagdelete"
 # task="deleteloop"
@@ -22,7 +22,7 @@ init_users['6'] = "Sandra Veld"
 init_users['9'] = "Greetje Nijburg"
 '''
 
-# user_exec=["5"]
+# user_exec=["1"]
 # user_exec=["4"]
 user_exec=["2","3","4","5","9","1"]
 # album_dict = {}

@@ -299,7 +299,8 @@ class ImmichApi:
                 album_locid = len(path) - 2
                 album_tag_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
-                try:
+                if asset_info['tags']:
+                    # print("ASSET HAS TAGS, CONTINUE......")
                     for tags in asset_info['tags']:
                         if tags['name'].startswith("20"):
                             album_tag = tags['name']
@@ -316,8 +317,32 @@ class ImmichApi:
                             folder=False
                             
                             self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
-                except:
-                    pass
+                else: 
+                    # print("ASSET HAS NO TAGS, FOLDER ALBUM>>>>......")
+                    album = path[album_locid]
+                    album = album.replace("_"," ")
+                    folder= True
+                    self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                # try:
+                #     for tags in asset_info['tags']:
+                #         if tags['name'].startswith("20"):
+                #             album_tag = tags['name']
+                #             album = album_tag
+                #             folder=False
+                #             self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                #         elif tags['name'].startswith("4"):
+                #             ron=True
+                #         else:
+                #             album_tag = tags['name']
+                #             album = album_tag
+                #             album_prefix_test = f"{album_tag_prefix} {album_tag}"
+                #             # print(f"this album would have been named {album_prefix_test}")
+                #             folder=False
+                            
+                #             self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                # except:
+                #     print(f"NO TAGS FOUND< SHOULD IT BE A FOLDER?? {album_tag_prefix }")
+                #     # pass
         return album_dict
     
 
@@ -334,10 +359,10 @@ class ImmichApi:
         elif "@" in album:
             suffix = "@"
         else:
-            if folder == True:
-                suffix = "SKIP"
-            else:
-                suffix = "#"
+            if folder == True:                      # Have to check what this does
+                suffix = "SKIP"                     # and if it is still neccesary
+            else:                                   # looks like if there is a tag
+                suffix = "#"                        # without suffix it gets # assigned
         if suffix != "SKIP":        
             procAlbum = procAlbum.replace(f" {suffix}","")
             if procAlbum not in album_dict:
