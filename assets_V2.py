@@ -4,43 +4,14 @@ import tasks
 
 os.system('clear')
 
-api_keys = settings.api_keys
-to_share = settings.to_share
-geo_dict = settings.geo_dict
-cons_albums = settings.cons_albums
-base_url = settings.base_url
-album_id = settings.album_id
-admin_api = settings.admin_api
-assetid=settings.assetid
-
-albums_set = set()
-album_dict = {}
-asset_limit = 1000
-
-# task="album_info"
-
-#task="list_albums"
-
-# task="geo_create"
-
-# task="create_by_tag"
+task="createloop"
+# task="updateloop"
+# task="libloop"
+# task="tagloop"
+# task="tagdelete"
+# task="deleteloop"
 
 
-# task="create"
-# task="delete"
-
-
-#task="getassetinfo"
-#task="debug"
-
-# for user in 3,5:
-#     print(user)
-#     task="create_by_tag"
-
-task="create_by_tag"
-
-init_users = settings.init_users
-iun = "4"
 '''
 init_users['1'] = "Ron Bruins"
 init_users['2'] = "Ron Mirjam"
