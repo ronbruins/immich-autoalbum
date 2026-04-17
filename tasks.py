@@ -69,7 +69,7 @@ def tagdelete(rbimmich):
 
 # Update albums so execution date is last modified for all albums from mainexecutor():
 def updateloop(rbimmich,api_key):
-    local=True
+    local=True #local = True as only owned albums need to be added to the list for each user
     album_ids,album_list = rbimmich.get_albums(local)
     for albumname in album_list['album']:
         album_id = album_list['album'][albumname]

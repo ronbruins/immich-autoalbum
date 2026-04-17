@@ -153,13 +153,15 @@ class ImmichApi:
         # for api in "albums", "albums?shared=true":
         # api = "albums"
         if local == False:
+            # local = FALSE as all available albums have to be known to see 
+            # if create or update is needed
             call = ["albums","albums?shared=true"]
         else: 
+            #local = TRUE as only owned albums need to be added to the list for each user
             call = ["albums"]
         for api in call:
-        # url = self.base_url + api
+            # url = self.base_url + api
             print(f"{api}", end=" ")
-            
             admin = False
             body = {}
             if id == "":
@@ -169,6 +171,7 @@ class ImmichApi:
                     album_id = album['id']
                     album_ids.append(album_id)
                     album_list['album'][album_name]=album_id
+                    print(album_name)
                     # updatedAt = album['updatedAt']
                     # print(updatedAt)
                 # return album_ids,album_list
