@@ -96,9 +96,6 @@ def createloop(rbimmich,init_user,api_key,album_dict):
     libraries = rbimmich.get_libraries() 
     search_lib = rbimmich.get_search_lib(set_user_id,libraries)
     assetsReceived = rbimmich.get_assets(asset_limit,search_lib)
-    # print("Initializing Folders build")
-    # user_album_dict = rbimmich.build_album_dict(assetsReceived,AlbumUsers,init_user,album_dict,api_key)
-    # print("Initializing Tags build")
     tag_album_dict = rbimmich.build_album_dict_by_tag(assetsReceived,AlbumUsers,init_user,album_dict,api_key)
     album_dict = tag_album_dict
     album_final.update(album_list['album'])
