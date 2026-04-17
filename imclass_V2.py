@@ -279,20 +279,6 @@ class ImmichApi:
                     search_lib = library['id']              
                     print(f"Library Path:\t \t \t \t {lib_name}")
         return search_lib
-    
-    # def build_album_dict(self, assetsReceived,AlbumUsers,init_user, album_dict,api_key):
-    #     for asset in assetsReceived:
-    #         path = asset['originalPath']
-    #         thumbhash = asset['thumbhash']
-    #         if thumbhash != None:
-    #             asset_id = asset['id']
-    #             path = path.split("/")
-    #             album_locid = len(path) - 2
-    #             album = path[album_locid]
-    #             album = album.replace("_"," ")
-    #             folder= True
-    #             self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
-    #     return album_dict
 
     def build_album_dict_by_tag(self, assetsReceived,AlbumUsers,init_user,album_dict,api_key):
         for asset in assetsReceived:
