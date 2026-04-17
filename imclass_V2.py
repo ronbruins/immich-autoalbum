@@ -200,7 +200,7 @@ class ImmichApi:
             own_api_key = album_dict[albumName]['api_key']
 
             api = "albums"
-            print(f"###{albumName}###")
+            # print(f"###{albumName}###")
             # print(json.dumps(album_list['album']))
             # for k,v in album_final['album'].items():
             # for k,v in album_final.items():
@@ -209,7 +209,7 @@ class ImmichApi:
             # if albumName not in album_final['album']:
             if albumName not in album_final:
                 
-                print(f"Album {self.RED}-NOT FOUND-{self.RESET} ")
+                print(f"Album {self.RED} {albumName} -NOT FOUND-{self.RESET}", end=" ")
                 if albumName != None:
                     body = {
                     'albumName': albumName,
@@ -223,7 +223,7 @@ class ImmichApi:
                     AlbumUsers = album_dict[albumName]['albumUsers']
                     if AlbumUsers != []:
                         # print(f"Sharing {albumName} with {AlbumUsers} for API: {own_api_key}")
-                        print(f"Sharing {albumName}")
+                        print(f"{self.YELLOW} Sharing {albumName} {self.RESET}")
                         album_id = album_data['id']
                         body = {
                         'albumUsers': AlbumUsers
@@ -232,9 +232,11 @@ class ImmichApi:
                         admin = False
                         payload=json.dumps(body)
                         debugresp = self.call_api("PUT", api, admin, payload, own_api_key)
+                    else:
+                        print(f"{self.YELLOW} Private Album {albumName} {self.RESET}")
 
             else:
-                print(f"Album {self.GREEN}-FOUND-{self.RESET}")
+                print(f"Album {self.GREEN} {albumName} -FOUND-{self.RESET}", end=" ")
                 # AlbumId = album_final['album'][albumName]
                 AlbumId = album_final[albumName]
                 api = f"albums/{AlbumId}/assets"
@@ -300,7 +302,6 @@ class ImmichApi:
                 album_tag_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
                 if asset_info['tags']:
-                    # print("ASSET HAS TAGS, CONTINUE......")
                     for tags in asset_info['tags']:
                         if tags['name'].startswith("20"):
                             album_tag = tags['name']
@@ -309,40 +310,22 @@ class ImmichApi:
                             self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
                         elif tags['name'].startswith("4"):
                             ron=True
+                            album = path[album_locid]
+                            album = album.replace("_"," ")
+                            folder= True
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
                         else:
                             album_tag = tags['name']
                             album = album_tag
                             album_prefix_test = f"{album_tag_prefix} {album_tag}"
-                            # print(f"this album would have been named {album_prefix_test}")
                             folder=False
-                            
                             self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
                 else: 
-                    # print("ASSET HAS NO TAGS, FOLDER ALBUM>>>>......")
                     album = path[album_locid]
                     album = album.replace("_"," ")
                     folder= True
                     self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
-                # try:
-                #     for tags in asset_info['tags']:
-                #         if tags['name'].startswith("20"):
-                #             album_tag = tags['name']
-                #             album = album_tag
-                #             folder=False
-                #             self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
-                #         elif tags['name'].startswith("4"):
-                #             ron=True
-                #         else:
-                #             album_tag = tags['name']
-                #             album = album_tag
-                #             album_prefix_test = f"{album_tag_prefix} {album_tag}"
-                #             # print(f"this album would have been named {album_prefix_test}")
-                #             folder=False
-                            
-                #             self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
-                # except:
-                #     print(f"NO TAGS FOUND< SHOULD IT BE A FOLDER?? {album_tag_prefix }")
-                #     # pass
+
         return album_dict
     
 
