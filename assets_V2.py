@@ -23,7 +23,7 @@ init_users['9'] = "Greetje Nijburg"
 '''
 
 user_exec=["2","3","4","5","9","1"]
-user_exec=["1"]
+# user_exec=["1"]
 # user_exec=["4"]
 # album_dict = {}
 # task == "debug"

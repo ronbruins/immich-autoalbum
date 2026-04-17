@@ -210,6 +210,7 @@ class ImmichApi:
                 body = {
                     "ids": assetIds,
                 }
+                # print(body)
                 admin = False
                 payload=json.dumps(body)
                 self.call_api("PUT", api, admin, payload,own_api_key)
@@ -296,13 +297,17 @@ class ImmichApi:
                 suffix = "#"                        # without suffix it gets # assigned
         if suffix != "SKIP":        
             procAlbum = procAlbum.replace(f" {suffix}","")
-            if procAlbum not in album_dict:
-                album_dict[procAlbum] = {}
-                album_dict[procAlbum]['api_key'] = api_key
-                album_dict[procAlbum]['assetIds'] = []
-                album_dict[procAlbum]['albumUsers'] = []
-                album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
-            album_dict[procAlbum]['assetIds'].append(asset_id)
+        else:
+            procAlbum = "DropAlbum"
+            suffix = "$"
+        if procAlbum not in album_dict:
+            album_dict[procAlbum] = {}
+            album_dict[procAlbum]['api_key'] = api_key
+            album_dict[procAlbum]['assetIds'] = []
+            album_dict[procAlbum]['albumUsers'] = []
+            album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
+        album_dict[procAlbum]['assetIds'].append(asset_id)
+        
 
     def update_albums(self,update_album_dict):
         for albumname in update_album_dict:
