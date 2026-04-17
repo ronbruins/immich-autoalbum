@@ -25,17 +25,17 @@ def mainexecutor(user_exec, task):
         api_key = api_keys[init_user]
         rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
         if task == "libloop":
-            libloop(rbimmich)
+            libloop(rbimmich) # Get Libraries
         elif task == "tagloop":
-            tagloop(rbimmich)
+            tagloop(rbimmich)  # Get Tags
         elif task == "tagdelete":
-            tagdelete(rbimmich)
+            tagdelete(rbimmich) # Delete Tags
         elif task == "deleteloop":
-            deleteloop(rbimmich)
-        elif task == "updateloop":
-            update_album_dict = update_album_list(rbimmich,api_key)
-        elif task == "createloop":
-            createloop(rbimmich,init_user,api_key,album_dict)
+            deleteloop(rbimmich) # Delete Albums
+        elif task == "updateloop": 
+            update_album_dict = updateloop(rbimmich,api_key) # Update album modified date
+        elif task == "createloop": 
+            createloop(rbimmich,init_user,api_key,album_dict) # Create or update assets in albums
 
     if task == "updateloop":
         sorted_data_keys = json.dumps({k: update_album_dict[k] for k in sorted(update_album_dict)})
@@ -49,15 +49,26 @@ def mainexecutor(user_exec, task):
             print(k)
         rbimmich.createAlbum(album_dict,album_final) 
 
+# Get Libraries from mainexecutor():
 def libloop(rbimmich):
         libraries = rbimmich.get_libraries() 
         print(json.dumps(libraries))
 
+# Get tags from mainexecutor():
 def tagloop(rbimmich):
         taglist = rbimmich.gettags()
         return taglist
 
-def update_album_list(rbimmich,api_key):
+# Delete tags collected from mainexecutor():
+def tagdelete(rbimmich):
+    taglist = rbimmich.gettags()
+    for tag in taglist:
+        tag_id=tag['id']
+        print(f"deleting {tag_id}")
+        rbimmich.delete_tags(tag_id)
+
+# Update albums so execution date is last modified for all albums from mainexecutor():
+def updateloop(rbimmich,api_key):
     local=True
     album_ids,album_list = rbimmich.get_albums(local)
     for albumname in album_list['album']:
@@ -67,13 +78,7 @@ def update_album_list(rbimmich,api_key):
         update_album_dict[albumname]['api_key']=api_key
     return update_album_dict
 
-def tagdelete(rbimmich):
-    taglist = rbimmich.gettags()
-    for tag in taglist:
-        tag_id=tag['id']
-        print(f"deleting {tag_id}")
-        rbimmich.delete_tags(tag_id)
-
+# Delete albums collected from mainexecutor():
 def deleteloop(rbimmich):
         local=False
         album_ids,album_list = rbimmich.get_albums(local)
@@ -81,7 +86,7 @@ def deleteloop(rbimmich):
             print(f"deleting {album_id}")
             rbimmich.delete_album(album_id)
 
-
+# Create albums collected from mainexecutor():
 def createloop(rbimmich,init_user,api_key,album_dict):
     local = False
     album_ids,album_list = rbimmich.get_albums(local)

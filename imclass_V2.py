@@ -269,8 +269,6 @@ class ImmichApi:
                     AlbumUsers[init_user][line].append(user_detail)
         return AlbumUsers,set_user_id
     
-
-
     def get_search_lib(self,set_user_id,libraries):
         for library in libraries:
             if set_user_id == library['ownerId']:
