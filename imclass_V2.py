@@ -247,6 +247,7 @@ class ImmichApi:
             if thumbhash != None:
                 asset_id = asset['id']
                 path = path.split("/")
+                asset_date = asset_info['fileCreatedAt']
                 album_locid = len(path) - 2
                 album_tag_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
