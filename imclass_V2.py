@@ -17,6 +17,9 @@ class ImmichApi:
         self.RED = '\033[31m'
         self.GREEN = '\033[32m'
         self.YELLOW = '\033[33m'
+        self.BLUE = '\033[34m'
+        self.MAGENTA = '\033[35m'
+        self.CYAN = '\033[36m'
         self.RESET = '\033[0m' # Resets all formatting
 
 
@@ -209,7 +212,7 @@ class ImmichApi:
             # if albumName not in album_final['album']:
             if albumName not in album_final:
                 
-                print(f"Album {self.RED} {albumName} -NOT FOUND-{self.RESET}", end=" ")
+                print(f"{self.BLUE}{albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
                 if albumName != None:
                     body = {
                     'albumName': albumName,
@@ -233,14 +236,14 @@ class ImmichApi:
                         payload=json.dumps(body)
                         debugresp = self.call_api("PUT", api, admin, payload, own_api_key)
                     else:
-                        print(f"{self.YELLOW} Private Album {albumName} {self.RESET}")
+                        print(f"{self.CYAN} Private Album {albumName} {self.RESET}")
 
             else:
-                print(f"Album {self.GREEN} {albumName} -FOUND-{self.RESET}", end=" ")
+                print(f"{self.BLUE}{albumName} {self.GREEN}-FOUND-{self.RESET}", end=" ")
                 # AlbumId = album_final['album'][albumName]
                 AlbumId = album_final[albumName]
                 api = f"albums/{AlbumId}/assets"
-                print(f"UPDATING {albumName} for API: {own_api_key}")
+                print(f"{self.MAGENTA}UPDATING {albumName} {self.RESET}")
                 body = {
                     "ids": assetIds,
                 }
@@ -277,19 +280,19 @@ class ImmichApi:
                     print(f"Library Path:\t \t \t \t {lib_name}")
         return search_lib
     
-    def build_album_dict(self, assetsReceived,AlbumUsers,init_user, album_dict,api_key):
-        for asset in assetsReceived:
-            path = asset['originalPath']
-            thumbhash = asset['thumbhash']
-            if thumbhash != None:
-                asset_id = asset['id']
-                path = path.split("/")
-                album_locid = len(path) - 2
-                album = path[album_locid]
-                album = album.replace("_"," ")
-                folder= True
-                self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
-        return album_dict
+    # def build_album_dict(self, assetsReceived,AlbumUsers,init_user, album_dict,api_key):
+    #     for asset in assetsReceived:
+    #         path = asset['originalPath']
+    #         thumbhash = asset['thumbhash']
+    #         if thumbhash != None:
+    #             asset_id = asset['id']
+    #             path = path.split("/")
+    #             album_locid = len(path) - 2
+    #             album = path[album_locid]
+    #             album = album.replace("_"," ")
+    #             folder= True
+    #             self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+    #     return album_dict
 
     def build_album_dict_by_tag(self, assetsReceived,AlbumUsers,init_user,album_dict,api_key):
         for asset in assetsReceived:
