@@ -1,17 +1,6 @@
 import requests
 import json
 
-
-        # RED = '\033[31m'
-        # GREEN = '\033[32m'
-        # YELLOW = '\033[33m'
-        # RESET = '\033[0m' # Resets all formatting
-
-        # print(f"{RED}This text is red.{RESET}")
-        # print(f"{GREEN}This text is green and {YELLOW}this part is yellow.{RESET}")
-        # print("This text is back to default color.")
-
-
 class ImmichApi:
     def __init__(self,api_key,base_url,init_user,admin_api):
         self.RED = '\033[31m'
@@ -32,7 +21,6 @@ class ImmichApi:
                 'Accept': 'application/json',
                 'x-api-key': f'{self.api_key}'
                 }
-        #body['size'] = asset_limit
         self.admin_headers = {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -105,7 +93,6 @@ class ImmichApi:
         body['size'] = asset_limit
         if search_lib != "":
             print("Using single library owned by user")
-            # body['libraryId'] = search_lib
         admin = False
         payload=json.dumps(body)
         responseJson = self.call_api("POST", api, admin, payload)
@@ -114,7 +101,6 @@ class ImmichApi:
         assetsReceived = responseJson['assets']['items']
         assets = assets + assetsReceived
         print(f"Received {len(assetsReceived)} assets with chunk {page}", end=" ")
-        # print("Hello", end=" ")
         while len(assetsReceived) == 1000:
                 page += 1
                 body['page'] = page
@@ -122,7 +108,6 @@ class ImmichApi:
                 admin = False
                 responseJson = self.call_api("POST", api, admin, payload)
                 assetsReceived = responseJson['assets']['items']
-                # print(f"Received {len(assetsReceived)} assets with chunk {page}")
                 print(f"{page}", end=" ")
                 assets = assets + assetsReceived
         print(" ")
@@ -130,23 +115,15 @@ class ImmichApi:
     
     def gettags(self):
         api = "tags"
-        # url = self.base_url + api
         admin = False
         body = {}
         taglist = self.call_api("GET", api, admin, body)
         return taglist
-        # taglist = json.dumps(r)
-        # print(r.text)
-        # for a in r.json:
-        #     print(a)
-
 
 
     def get_albums(self,local,id=""):
         album_list = {}
         album_list['album'] = {}
-        # api="albums?shared=true"
-        # api="albums"
         print(" ")
         print(f"Get albums for call:\t \t \t", end=" ")
         album_ids = []
@@ -160,7 +137,6 @@ class ImmichApi:
             #local = TRUE as only owned albums need to be added to the list for each user
             call = ["albums"]
         for api in call:
-            # url = self.base_url + api
             print(f"{api}", end=" ")
             admin = False
             body = {}
@@ -171,10 +147,7 @@ class ImmichApi:
                     album_id = album['id']
                     album_ids.append(album_id)
                     album_list['album'][album_name]=album_id
-                    print(album_name)
-                    # updatedAt = album['updatedAt']
-                    # print(updatedAt)
-                # return album_ids,album_list
+
             else:
                 api = f"albums/{id}"
                 album_info = self.call_api("GET", api, admin, body)
@@ -194,25 +167,14 @@ class ImmichApi:
             admin = True
             body = {}
             libraries = self.call_api("GET", api, admin, body)
-            # print(libraries)
             return libraries
 
     def createAlbum(self, album_dict,album_final):
-        # album_list = {}
-        # album_ids,album_list = self.get_albums(album_list)
         for albumName,albumDetails in album_dict.items():
             assetIds = album_dict[albumName]['assetIds']
             AlbumUsers = album_dict[albumName]['albumUsers']
             own_api_key = album_dict[albumName]['api_key']
-
             api = "albums"
-            # print(f"###{albumName}###")
-            # print(json.dumps(album_list['album']))
-            # for k,v in album_final['album'].items():
-            # for k,v in album_final.items():
-            #     print(k)
-
-            # if albumName not in album_final['album']:
             if albumName not in album_final:
                 
                 print(f"{self.BLUE}{albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
@@ -228,7 +190,6 @@ class ImmichApi:
                     album_data = self.call_api("POST", api, admin, payload,own_api_key)
                     AlbumUsers = album_dict[albumName]['albumUsers']
                     if AlbumUsers != []:
-                        # print(f"Sharing {albumName} with {AlbumUsers} for API: {own_api_key}")
                         print(f"{self.YELLOW} Sharing {albumName} {self.RESET}")
                         album_id = album_data['id']
                         body = {
@@ -243,14 +204,12 @@ class ImmichApi:
 
             else:
                 print(f"{self.BLUE}{albumName} {self.GREEN}-FOUND-{self.RESET}", end=" ")
-                # AlbumId = album_final['album'][albumName]
                 AlbumId = album_final[albumName]
                 api = f"albums/{AlbumId}/assets"
                 print(f"{self.MAGENTA}UPDATING {albumName} {self.RESET}")
                 body = {
                     "ids": assetIds,
                 }
-                # print(body)
                 admin = False
                 payload=json.dumps(body)
                 self.call_api("PUT", api, admin, payload,own_api_key)
@@ -266,7 +225,6 @@ class ImmichApi:
                 if init_user == user_name:
                     set_user_id = user['id']
                 if user_name in to_share[init_user][line]:
-                    # print(f"Sharing with: {user_name}")
                     userid = user['id']
                     user_detail = {"role": "editor", "userId":userid}
                     AlbumUsers[init_user][line].append(user_detail)
@@ -350,8 +308,6 @@ class ImmichApi:
         for albumname in update_album_dict:
             album_id = update_album_dict[albumname]['album_id']
             own_api_key = update_album_dict[albumname]['api_key']
-
-            # print(albumname, album_id,own_api_key)
             api = f"albums/{album_id}"
             body = {
                     "description": "rontest"
@@ -359,6 +315,5 @@ class ImmichApi:
             admin = False
             payload=json.dumps(body)
             self.call_api("PATCH", api, admin, payload,own_api_key)
-            # print(f"Updated: {albumname} {own_api_key}")
 
             

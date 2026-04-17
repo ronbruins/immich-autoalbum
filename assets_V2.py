@@ -5,7 +5,7 @@ import tasks
 os.system('clear')
 
 task="createloop"
-task="updateloop"
+# task="updateloop"
 # task="libloop"
 # task="tagloop"
 # task="tagdelete"
