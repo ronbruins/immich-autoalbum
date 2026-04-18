@@ -170,17 +170,37 @@ class ImmichApi:
             return libraries
 
     def createAlbum(self, album_dict,album_final):
+        # for album in old_album_dict:
+        #     if old_album_dict[album]['category'] == "#":
+        #         albumdatecheck = min(old_album_dict[album]['assetDates'])[:10]
+        #         genalbumName = f"{albumdatecheck} {album}"
+        #         album_dict = {genalbumName if k == album else k: v for k, v in old_album_dict.items()}
+
+
+
+
         for albumName,albumDetails in album_dict.items():
             assetIds = album_dict[albumName]['assetIds']
             AlbumUsers = album_dict[albumName]['albumUsers']
             own_api_key = album_dict[albumName]['api_key']
             api = "albums"
-            if albumName not in album_final:
+
+            assetdates = album_dict[albumName]['assetDates']
+            assetdates.sort()
+            albumdatecheck = min(album_dict[albumName]['assetDates'])[:10]
+            if album_dict[albumName]['category'] == "#" or album_dict[albumName]['category'] == "$":
+                genalbumName = f"{albumdatecheck}{albumName[4:]}"
+            else:
+                genalbumName = albumName
+            # genalbumName = albumName
+
+
+            if genalbumName not in album_final:
                 
                 print(f"{self.BLUE}{albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
                 if albumName != None:
                     body = {
-                    'albumName': albumName,
+                    'albumName': genalbumName,
                     'description': albumName,
                     "assetIds": assetIds,
                     }
@@ -204,7 +224,7 @@ class ImmichApi:
 
             else:
                 print(f"{self.BLUE}{albumName} {self.GREEN}-FOUND-{self.RESET}", end=" ")
-                AlbumId = album_final[albumName]
+                AlbumId = album_final[genalbumName]
                 api = f"albums/{AlbumId}/assets"
                 print(f"{self.MAGENTA}UPDATING {albumName} {self.RESET}")
                 body = {
@@ -247,39 +267,41 @@ class ImmichApi:
             if thumbhash != None:
                 asset_id = asset['id']
                 path = path.split("/")
-                asset_date = asset_info['fileCreatedAt']
                 album_locid = len(path) - 2
                 album_tag_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
+                asset_date = asset_info['fileCreatedAt']
+                # print(asset_date)
                 if asset_info['tags']:
                     for tags in asset_info['tags']:
                         if tags['name'].startswith("20"):
                             album_tag = tags['name']
                             album = album_tag
                             folder=False
-                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                         elif tags['name'].startswith("4"):
                             ron=True
                             album = path[album_locid]
                             album = album.replace("_"," ")
                             folder= True
-                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                         else:
                             album_tag = tags['name']
                             album = album_tag
                             album_prefix_test = f"{album_tag_prefix} {album_tag}"
                             folder=False
-                            self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                 else: 
                     album = path[album_locid]
                     album = album.replace("_"," ")
                     folder= True
-                    self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                    self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
 
-        return album_dict
+
+        # return album_dict
     
 
-    def build_album(self, album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder):
+    def build_album(self, album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder):
         procAlbum = album                        
         if "#" in procAlbum:
             suffix = "#"
@@ -299,15 +321,18 @@ class ImmichApi:
         if suffix != "SKIP":        
             procAlbum = procAlbum.replace(f" {suffix}","")
         else:
-            procAlbum = "DropAlbum"
+            procAlbum = "2000 DropAlbum"
             suffix = "$"
         if procAlbum not in album_dict:
             album_dict[procAlbum] = {}
             album_dict[procAlbum]['api_key'] = api_key
+            album_dict[procAlbum]['category'] = suffix
             album_dict[procAlbum]['assetIds'] = []
+            album_dict[procAlbum]['assetDates'] = []
             album_dict[procAlbum]['albumUsers'] = []
             album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
         album_dict[procAlbum]['assetIds'].append(asset_id)
+        album_dict[procAlbum]['assetDates'].append(asset_date)
         
 
     def update_albums(self,update_album_dict):
