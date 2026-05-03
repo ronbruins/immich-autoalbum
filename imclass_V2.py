@@ -257,30 +257,30 @@ class ImmichApi:
                             album_tag = tags['name']
                             album = album_tag
                             folder=False
-                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                         elif tags['name'].startswith("4"):
                             ron=True
                             album = path[album_locid]
                             album = album.replace("_"," ")
                             folder= True
-                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                         else:
                             album_tag = tags['name']
                             album = album_tag
                             album_prefix_test = f"{album_tag_prefix} {album_tag}"
                             folder=False
                             # self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
-                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
                 else: 
                     album = path[album_locid]
                     album = album.replace("_"," ")
                     folder= True
-                    self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                    self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder)
 
         return album_dict
     
 
-    def build_album(self, album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder):
+    def build_album(self, album, album_dict, api_key,AlbumUsers, init_user, asset_id,asset_date,folder):
         procAlbum = album                        
         if "#" in procAlbum:
             suffix = "#"
@@ -309,6 +309,7 @@ class ImmichApi:
             album_dict[procAlbum]['albumUsers'] = []
             album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
         album_dict[procAlbum]['assetIds'].append(asset_id)
+        album_dict[procAlbum]['assetDates'].append(asset_date)
         
 
     def update_albums(self,update_album_dict):
