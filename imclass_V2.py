@@ -144,9 +144,10 @@ class ImmichApi:
                 responseJson = self.call_api("GET", api, admin, body)
                 for album in responseJson:
                     album_name = album['albumName']
+                    album_short = album_name[11:]
                     album_id = album['id']
                     album_ids.append(album_id)
-                    album_list['album'][album_name]=album_id
+                    album_list['album'][album_short]=album_id
 
             else:
                 api = f"albums/{id}"
@@ -175,13 +176,21 @@ class ImmichApi:
             AlbumUsers = album_dict[albumName]['albumUsers']
             own_api_key = album_dict[albumName]['api_key']
             api = "albums"
+
+            assetdates = album_dict[albumName]['assetDates']
+            assetdates.sort()
+            albumdateprefix = min(album_dict[albumName]['assetDates'])[:10]
+            # print(albumdateprefix)
+            genAlbumName = f"{albumdateprefix} {albumName}"
+
+
             if albumName not in album_final:
                 
-                print(f"{self.BLUE}{albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
+                print(f"{self.BLUE}{albumdateprefix} {albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
                 if albumName != None:
                     body = {
-                    'albumName': albumName,
-                    'description': albumName,
+                    'albumName': genAlbumName,
+                    'description': genAlbumName,
                     "assetIds": assetIds,
                     }
                     payload = json.dumps(body)
@@ -284,10 +293,12 @@ class ImmichApi:
         procAlbum = album                        
         if "#" in procAlbum:
             suffix = "#"
-            procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            # procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            procAlbum = album
         if "$" in procAlbum:
             suffix = "$"
-            procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            # procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
+            procAlbum = album
         elif "@@" in album:
             suffix = "@@"
         elif "@" in album:
@@ -306,6 +317,7 @@ class ImmichApi:
             album_dict[procAlbum] = {}
             album_dict[procAlbum]['api_key'] = api_key
             album_dict[procAlbum]['assetIds'] = []
+            album_dict[procAlbum]['assetDates'] = []
             album_dict[procAlbum]['albumUsers'] = []
             album_dict[procAlbum]['albumUsers'] = AlbumUsers[init_user][suffix]
         album_dict[procAlbum]['assetIds'].append(asset_id)
