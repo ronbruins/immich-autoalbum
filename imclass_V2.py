@@ -250,6 +250,7 @@ class ImmichApi:
                 album_locid = len(path) - 2
                 album_tag_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
+                asset_date = asset_info['fileCreatedAt']
                 if asset_info['tags']:
                     for tags in asset_info['tags']:
                         if tags['name'].startswith("20"):
