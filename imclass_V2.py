@@ -268,7 +268,8 @@ class ImmichApi:
                             album = album_tag
                             album_prefix_test = f"{album_tag_prefix} {album_tag}"
                             folder=False
-                            self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            # self.build_album(album_prefix_test, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
+                            self.build_album(album, album_dict, api_key,AlbumUsers, init_user, asset_id,folder)
                 else: 
                     album = path[album_locid]
                     album = album.replace("_"," ")

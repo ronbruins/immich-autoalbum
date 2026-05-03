@@ -37,6 +37,7 @@ def mainexecutor(user_exec, task):
         elif task == "createloop": 
             createloop(rbimmich,init_user,api_key,album_dict) # Create or update assets in albums
 
+
     if task == "updateloop":
         sorted_data_keys = json.dumps({k: update_album_dict[k] for k in sorted(update_album_dict)})
         update_album_dict = json.loads(sorted_data_keys)
@@ -99,3 +100,4 @@ def createloop(rbimmich,init_user,api_key,album_dict):
     tag_album_dict = rbimmich.build_album_dict_by_tag(assetsReceived,AlbumUsers,init_user,album_dict,api_key)
     album_dict = tag_album_dict
     album_final.update(album_list['album'])
+
