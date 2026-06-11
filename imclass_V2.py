@@ -181,12 +181,18 @@ class ImmichApi:
             assetdates.sort()
             albumdateprefix = min(album_dict[albumName]['assetDates'])[:10]
             # print(albumdateprefix)
-            genAlbumName = f"{albumdateprefix} {albumName}"
+
+            if albumName[:4].isdigit():
+                albumName_parts = albumName.split("_")
+                albumName_part = albumName_parts[1]
+                genAlbumName = f"{albumdateprefix} {albumName_part}"
+            else:
+                genAlbumName = f"{albumdateprefix} {albumName}"
 
 
             if albumName not in album_final:
-                
-                print(f"{self.BLUE}{albumdateprefix} {albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
+                # print(f"{self.BLUE}{albumdateprefix} {albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
+                print(f"{self.BLUE}{genAlbumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
                 if albumName != None:
                     body = {
                     'albumName': genAlbumName,
@@ -260,6 +266,7 @@ class ImmichApi:
                 album_tag_prefix = path[album_locid]
                 asset_info = self.get_asset_info(asset_id)
                 asset_date = asset_info['fileCreatedAt']
+                # print(asset_id,asset_date)
                 if asset_info['tags']:
                     for tags in asset_info['tags']:
                         if tags['name'].startswith("20"):
@@ -297,8 +304,8 @@ class ImmichApi:
             procAlbum = album
         if "$" in procAlbum:
             suffix = "$"
-            # procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
-            procAlbum = album
+            procAlbum = f"{asset_date[:4]}_{album}" #consolidate album into year and description
+            # procAlbum = album
         elif "@@" in album:
             suffix = "@@"
         elif "@" in album:
