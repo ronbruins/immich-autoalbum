@@ -119,6 +119,36 @@ class ImmichApi:
         body = {}
         taglist = self.call_api("GET", api, admin, body)
         return taglist
+    
+    def getnotifications(self):
+        api = "notifications"
+        admin = False
+        body = {}
+        notifications = self.call_api("GET", api, admin, body)
+        return notifications
+    
+    # def delete_tags(self,tag_id):
+    #     api = f"tags/{tag_id}"
+    #     admin = False
+    #     body = {}
+    #     print(f"DELETE, {api}, {admin}, {body})")
+    #     self.call_api("DELETE", api, admin, body)
+
+    def delete_notification(self,not_id):
+        api = f"notifications/{not_id}"
+        # api = f"notifications"
+        admin = False
+        body = {}
+        print(f"DELETE, {api}, {admin}, {body})")
+        self.call_api("DELETE", api, admin, body)
+
+    def delete_notifications(self,not_list):
+        # api = f"tags/{tag_id}"
+        api = f"notifications"
+        admin = False
+        body = { 'ids':not_list}
+        print(f"DELETE, {api}, {admin}, {body})")
+        self.call_api("DELETE", api, admin, body)
 
 
     def get_albums(self,local,id=""):
@@ -171,6 +201,8 @@ class ImmichApi:
             return libraries
 
     def createAlbum(self, album_dict,album_final):
+        # print(album_final)
+
         for albumName,albumDetails in album_dict.items():
             assetIds = album_dict[albumName]['assetIds']
             AlbumUsers = album_dict[albumName]['albumUsers']
@@ -186,13 +218,30 @@ class ImmichApi:
                 albumName_parts = albumName.split("_")
                 albumName_part = albumName_parts[1]
                 genAlbumName = f"{albumdateprefix} {albumName_part}"
+                # albumName = albumName_part
             else:
                 genAlbumName = f"{albumdateprefix} {albumName}"
 
 
+            # album could be 2026_NBA
+            # While data is different from existing
+            # genAlbumName would be 2026-03-12 NBA while 2026-01-12 NBA already exists
+            # if albumName[:4] in album_final and albumName[5:] in album_final:
+            #     print("Consolidated album for this year exists")
+            print("######## DEBUG MODE")
+            print(f"Album: {albumName}")
+            print(f"GenAlbum: {genAlbumName}")
+            print(f"if {albumName} not in album_final and {genAlbumName} not in album_final:")
+            print("######## DEBUG MODE")
+            for album in album_final:
+                if "NBA" in album:
+                    print(f"#### {album}")
+
+
+
             if albumName not in album_final:
                 # print(f"{self.BLUE}{albumdateprefix} {albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
-                print(f"{self.BLUE}{genAlbumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
+                print(f"{self.BLUE}Generated Name: {genAlbumName} or Albumname: {albumName}{self.RED} -NOT FOUND-{self.RESET} Creating {genAlbumName}", end=" ")
                 if albumName != None:
                     body = {
                     'albumName': genAlbumName,

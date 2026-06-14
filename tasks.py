@@ -36,7 +36,8 @@ def mainexecutor(user_exec, task):
             update_album_dict = updateloop(rbimmich,api_key) # Update album modified date
         elif task == "createloop": 
             createloop(rbimmich,init_user,api_key,album_dict) # Create or update assets in albums
-
+        elif task == "notidelete":
+            notidelete(rbimmich) # Delete Tags
 
     if task == "updateloop":
         sorted_data_keys = json.dumps({k: update_album_dict[k] for k in sorted(update_album_dict)})
@@ -68,6 +69,18 @@ def tagdelete(rbimmich):
         print(f"deleting {tag_id}")
         rbimmich.delete_tags(tag_id)
 
+def notidelete(rbimmich):
+    notifications = rbimmich.getnotifications()
+    not_list = []
+    # print(notifications)
+    for tag in notifications:
+        not_id=tag['id']
+        # not_list.append(not_id)
+        # print(f"deleting {not_id}")
+        rbimmich.delete_notification(not_id)
+    # print(not_list)
+    # rbimmich.delete_notifications(not_list)
+
 # Update albums so execution date is last modified for all albums from mainexecutor():
 def updateloop(rbimmich,api_key):
     local=True #local = True as only owned albums need to be added to the list for each user
@@ -91,6 +104,7 @@ def deleteloop(rbimmich):
 def createloop(rbimmich,init_user,api_key,album_dict):
     local = False
     album_ids,album_list = rbimmich.get_albums(local)
+    # print(album_list)
     immich_users = rbimmich.get_users()
     AlbumUsers,set_user_id = rbimmich.build_album_users(immich_users,init_user,to_share)
     print(f"User ID: \t \t \t \t {set_user_id}")
