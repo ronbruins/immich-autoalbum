@@ -36,6 +36,7 @@ def mainexecutor(user_exec, task):
             update_album_dict = updateloop(rbimmich,api_key) # Update album modified date
         elif task == "createloop": 
             createloop(rbimmich,init_user,api_key,album_dict) # Create or update assets in albums
+           
         elif task == "notidelete":
             notidelete(rbimmich) # Delete Tags
 
@@ -49,7 +50,16 @@ def mainexecutor(user_exec, task):
         album_dict = json.loads(sorted_data_keys)
         for k,v in album_dict.items():
             print(k)
+        # print(album_final)
         rbimmich.createAlbum(album_dict,album_final) 
+    for iun in user_exec:
+        init_user = init_users[iun]
+        api_key = api_keys[init_user]
+        rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+        notidelete(rbimmich) # Delete Notifications
+
+        
+    
 
 # Get Libraries from mainexecutor():
 def libloop(rbimmich):

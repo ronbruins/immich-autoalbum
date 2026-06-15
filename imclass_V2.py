@@ -154,6 +154,8 @@ class ImmichApi:
     def get_albums(self,local,id=""):
         album_list = {}
         album_list['album'] = {}
+        album_list['album']['album_short'] = {}
+        album_list['album']['album_long'] = {}
         print(" ")
         print(f"Get albums for call:\t \t \t", end=" ")
         album_ids = []
@@ -175,9 +177,12 @@ class ImmichApi:
                 for album in responseJson:
                     album_name = album['albumName']
                     album_short = album_name[11:]
+                    album_long = album_name
                     album_id = album['id']
                     album_ids.append(album_id)
-                    album_list['album'][album_short]=album_id
+                    album_list['album']['album_short'][album_short]=album_id
+                    album_list['album']['album_long'][album_long]=album_id
+
 
             else:
                 api = f"albums/{id}"
@@ -236,48 +241,83 @@ class ImmichApi:
             for album in album_final:
                 if "NBA" in album:
                     print(f"#### {album}")
+            process = True
+            genfound = False
+            albfound = False  
 
 
 
-            if albumName not in album_final:
-                # print(f"{self.BLUE}{albumdateprefix} {albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
-                print(f"{self.BLUE}Generated Name: {genAlbumName} or Albumname: {albumName}{self.RED} -NOT FOUND-{self.RESET} Creating {genAlbumName}", end=" ")
-                if albumName != None:
-                    body = {
-                    'albumName': genAlbumName,
-                    'description': genAlbumName,
-                    "assetIds": assetIds,
-                    }
-                    payload = json.dumps(body)
-                    admin = False
-                    payload=json.dumps(body)
-                    album_data = self.call_api("POST", api, admin, payload,own_api_key)
-                    AlbumUsers = album_dict[albumName]['albumUsers']
-                    if AlbumUsers != []:
-                        print(f"{self.YELLOW} Sharing {albumName} {self.RESET}")
-                        album_id = album_data['id']
+            if albumName not in album_final['album_short']:
+                print(f"Album: {albumName} not in album_final SHORT")
+            else:
+                print(f"Album: {albumName} in album_final SHORT")
+                albfound = True  
+            if albumName not in album_final['album_long']:
+                print(f"Album: {albumName} not in album_final LONG")
+            else:
+                print(f"Album: {albumName} IN album_final LONG")
+                albfound = True  
+
+            if genAlbumName not in album_final['album_short']:
+                print(f"genAlbumName: {genAlbumName} not in album_final SHORT")
+            else:
+                print(f"genAlbumName: {genAlbumName} in album_final SHORT")
+                genfound = True  
+            if genAlbumName not in album_final['album_long']:
+                print(f"genAlbumName: {genAlbumName} not in album_final LONG")
+            else:
+                print(f"genAlbumName: {genAlbumName} IN album_final LONG")
+                genfound = True             
+
+
+
+
+            if process == True:
+                if genfound == False and albfound == False:
+                # if albumName not in album_final['album_short']:
+                    # print(f"{self.BLUE}{albumdateprefix} {albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
+                    print(f"{self.BLUE}Generated Name: {genAlbumName} or Albumname: {albumName}{self.RED} -NOT FOUND-{self.RESET} Creating {genAlbumName}", end=" ")
+                    if albumName != None:
                         body = {
-                        'albumUsers': AlbumUsers
+                        'albumName': genAlbumName,
+                        'description': genAlbumName,
+                        "assetIds": assetIds,
                         }
-                        api = f"albums/{album_id}/users"
+                        payload = json.dumps(body)
                         admin = False
                         payload=json.dumps(body)
-                        debugresp = self.call_api("PUT", api, admin, payload, own_api_key)
-                    else:
-                        print(f"{self.CYAN} Private Album {albumName} {self.RESET}")
+                        album_data = self.call_api("POST", api, admin, payload,own_api_key)
+                        AlbumUsers = album_dict[albumName]['albumUsers']
+                        if AlbumUsers != []:
+                            print(f"{self.YELLOW} Sharing {albumName} {self.RESET}")
+                            album_id = album_data['id']
+                            body = {
+                            'albumUsers': AlbumUsers
+                            }
+                            api = f"albums/{album_id}/users"
+                            admin = False
+                            payload=json.dumps(body)
+                            debugresp = self.call_api("PUT", api, admin, payload, own_api_key)
+                        else:
+                            print(f"{self.CYAN} Private Album {albumName} {self.RESET}")
 
-            else:
-                print(f"{self.BLUE}{albumName} {self.GREEN}-FOUND-{self.RESET}", end=" ")
-                AlbumId = album_final[albumName]
-                api = f"albums/{AlbumId}/assets"
-                print(f"{self.MAGENTA}UPDATING {albumName} {self.RESET}")
-                body = {
-                    "ids": assetIds,
-                }
-                # print(body)
-                admin = False
-                payload=json.dumps(body)
-                self.call_api("PUT", api, admin, payload,own_api_key)
+                else:
+                    if genfound == True:
+                        AlbumId = album_final['album_long'][genAlbumName]
+                    else:
+                        AlbumId = album_final['album_short'][albumName]
+
+                    print(f"{self.BLUE}{albumName} / {genAlbumName} {self.GREEN}-FOUND-{self.RESET}", end=" ")
+                    
+                    api = f"albums/{AlbumId}/assets"
+                    print(f"{self.MAGENTA}UPDATING {albumName} {self.RESET}")
+                    body = {
+                        "ids": assetIds,
+                    }
+                    # print(body)
+                    admin = False
+                    payload=json.dumps(body)
+                    self.call_api("PUT", api, admin, payload,own_api_key)
 
     def build_album_users(self,immich_users,init_user,to_share):
         AlbumUsers = {}
@@ -350,7 +390,8 @@ class ImmichApi:
         if "#" in procAlbum:
             suffix = "#"
             # procAlbum = f"{album[:4]}{album[10:]}" #consolidate album into year and description
-            procAlbum = album
+            procAlbum = f"{asset_date[:4]}_{album}" #consolidate album into year and description
+            # procAlbum = album
         if "$" in procAlbum:
             suffix = "$"
             procAlbum = f"{asset_date[:4]}_{album}" #consolidate album into year and description
