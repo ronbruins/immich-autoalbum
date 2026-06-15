@@ -38,6 +38,7 @@ def mainexecutor(user_exec, task):
             createloop(rbimmich,init_user,api_key,album_dict) # Create or update assets in albums
            
         elif task == "notidelete":
+            print(f"delete notifications for {init_users[iun]}")
             notidelete(rbimmich) # Delete Tags
 
     if task == "updateloop":
@@ -52,11 +53,12 @@ def mainexecutor(user_exec, task):
             print(k)
         # print(album_final)
         rbimmich.createAlbum(album_dict,album_final) 
-    for iun in user_exec:
-        init_user = init_users[iun]
-        api_key = api_keys[init_user]
-        rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
-        notidelete(rbimmich) # Delete Notifications
+    # for iun in user_exec:
+    #     init_user = init_users[iun]
+    #     api_key = api_keys[init_user]
+    #     rbimmich = imclass_V2.ImmichApi(api_key,base_url,init_user,admin_api)
+    #     print(f"delete notifications for {init_users[iun]}")
+    #     notidelete(rbimmich) # Delete Notifications
 
         
     

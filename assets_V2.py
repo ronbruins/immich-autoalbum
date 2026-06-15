@@ -32,6 +32,7 @@ def main():
     tasks.mainexecutor(user_exec,task) 
     if task == "createloop": 
         tasks.mainexecutor(user_exec,"updateloop")
+        tasks.mainexecutor(user_exec,"notidelete")
 
 if __name__ == '__main__':
     main()
