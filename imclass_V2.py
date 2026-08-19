@@ -46,7 +46,7 @@ class ImmichApi:
             else:
                 r = requests.request(method, url, headers=self.headers, data=body)
         else:
-            print(f"Using Admin Headers: \t \t \t {self.admin_headers}")
+            # print(f"Using Admin Headers: \t \t \t {self.admin_headers}")
             r = requests.request(method, url, headers=self.admin_headers, data=body)
             responseJson = r.json()
             return responseJson
@@ -87,20 +87,30 @@ class ImmichApi:
         headers = {
         'x-api-key': f'{self.api_key}'
         }
-        print(f"API-KEY: \t \t \t \t {self.api_key}")
+        # print(f"API-KEY: \t \t \t \t {self.api_key}")
         body = {}
-        body['isNotInAlbum'] = 'true'
+        body['isNotInAlbum'] = True
+        body['visibility'] = "timeline"
+
         body['size'] = asset_limit
-        if search_lib != "":
-            print("Using single library owned by user")
+        # if search_lib != "":
+        #     print("Using single library owned by user")
         admin = False
         payload=json.dumps(body)
+        # print(payload)
         responseJson = self.call_api("POST", api, admin, payload)
+        # print(responseJson)
 
         page = 1
         assetsReceived = responseJson['assets']['items']
         assets = assets + assetsReceived
         print(f"Received {len(assetsReceived)} assets with chunk {page}", end=" ")
+        # showrcvd = True
+        showrcvd = False
+        if showrcvd == True:
+            for a in assetsReceived:
+                print(a['id'], a['originalPath'])
+
         while len(assetsReceived) == 1000:
                 page += 1
                 body['page'] = page
@@ -156,8 +166,8 @@ class ImmichApi:
         album_list['album'] = {}
         album_list['album']['album_short'] = {}
         album_list['album']['album_long'] = {}
-        print(" ")
-        print(f"Get albums for call:\t \t \t", end=" ")
+        # print(" ")
+        # print(f"Get albums for call:\t \t \t", end=" ")
         album_ids = []
         # for api in "albums", "albums?shared=true":
         # api = "albums"
@@ -169,7 +179,7 @@ class ImmichApi:
             #local = TRUE as only owned albums need to be added to the list for each user
             call = ["albums"]
         for api in call:
-            print(f"{api}", end=" ")
+            # print(f"{api}", end=" ")
             admin = False
             body = {}
             if id == "":
@@ -177,6 +187,7 @@ class ImmichApi:
                 for album in responseJson:
                     album_name = album['albumName']
                     album_short = album_name[11:]
+                    # print(f"@@@@###@@@###@@@: {album_short}")
                     album_long = album_name
                     album_id = album['id']
                     album_ids.append(album_id)
@@ -188,7 +199,7 @@ class ImmichApi:
                 api = f"albums/{id}"
                 album_info = self.call_api("GET", api, admin, body)
                 return album_info
-        print(" ")
+        # print(" ")
         return album_ids,album_list
 
     def get_asset_info(self,asset_id):
@@ -208,7 +219,9 @@ class ImmichApi:
     def createAlbum(self, album_dict,album_final):
         # print(album_final)
 
+
         for albumName,albumDetails in album_dict.items():
+            # genAlbumName = ""
             assetIds = album_dict[albumName]['assetIds']
             AlbumUsers = album_dict[albumName]['albumUsers']
             own_api_key = album_dict[albumName]['api_key']
@@ -226,6 +239,7 @@ class ImmichApi:
                 # albumName = albumName_part
             else:
                 genAlbumName = f"{albumdateprefix} {albumName}"
+                albumName_part = "XXX"
 
 
             # album could be 2026_NBA
@@ -233,37 +247,46 @@ class ImmichApi:
             # genAlbumName would be 2026-03-12 NBA while 2026-01-12 NBA already exists
             # if albumName[:4] in album_final and albumName[5:] in album_final:
             #     print("Consolidated album for this year exists")
-            print("######## DEBUG MODE")
-            print(f"Album: {albumName}")
-            print(f"GenAlbum: {genAlbumName}")
-            print(f"if {albumName} not in album_final and {genAlbumName} not in album_final:")
-            print("######## DEBUG MODE")
-            for album in album_final:
-                if "NBA" in album:
-                    print(f"#### {album}")
+            # print("######## DEBUG MODE")
+            # print(f"Album: {albumName}")
+            # print(f"GenAlbum: {genAlbumName}")
+            # print(f"Year: {genAlbumName[:4]}")
+            albumYear = genAlbumName[:4]
+            # print(f"if {albumName} not in album_final and {genAlbumName} not in album_final:")
+            # print("######## DEBUG MODE")
+            # print(album_final)
+            for album in album_final['album_long']:
+                # print(album)
+                if albumName_part in album and albumYear in album:
+                    # print(f"#### {album}")
+                    genAlbumName = album
+                    genfound = True
+                else:
+                    genfound = False
+                    albfound = False 
             process = True
-            genfound = False
-            albfound = False  
-
-
-
+            # print(album_final)
             if albumName not in album_final['album_short']:
+                # pass
                 print(f"Album: {albumName} not in album_final SHORT")
             else:
                 print(f"Album: {albumName} in album_final SHORT")
                 albfound = True  
             if albumName not in album_final['album_long']:
+                pass
                 print(f"Album: {albumName} not in album_final LONG")
             else:
                 print(f"Album: {albumName} IN album_final LONG")
                 albfound = True  
 
             if genAlbumName not in album_final['album_short']:
+                # pass
                 print(f"genAlbumName: {genAlbumName} not in album_final SHORT")
             else:
                 print(f"genAlbumName: {genAlbumName} in album_final SHORT")
                 genfound = True  
             if genAlbumName not in album_final['album_long']:
+                # pass
                 print(f"genAlbumName: {genAlbumName} not in album_final LONG")
             else:
                 print(f"genAlbumName: {genAlbumName} IN album_final LONG")
@@ -276,7 +299,7 @@ class ImmichApi:
                 if genfound == False and albfound == False:
                 # if albumName not in album_final['album_short']:
                     # print(f"{self.BLUE}{albumdateprefix} {albumName}{self.RED} -NOT FOUND-{self.RESET}", end=" ")
-                    print(f"{self.BLUE}Generated Name: {genAlbumName} or Albumname: {albumName}{self.RED} -NOT FOUND-{self.RESET} Creating {genAlbumName}", end=" ")
+                    print(f"{self.BLUE}Generated Name: {genAlbumName} or Albumname: {albumName}{self.RED} -NOT FOUND-{self.RESET} Creating {genAlbumName} for {self.init_user}", end=" ")
                     if albumName != None:
                         body = {
                         'albumName': genAlbumName,
@@ -310,14 +333,15 @@ class ImmichApi:
                     print(f"{self.BLUE}{albumName} / {genAlbumName} {self.GREEN}-FOUND-{self.RESET}", end=" ")
                     
                     api = f"albums/{AlbumId}/assets"
-                    print(f"{self.MAGENTA}UPDATING {albumName} {self.RESET}")
+                    print(f"{self.MAGENTA}UPDATING {albumName} for {self.init_user} {self.RESET}")
                     body = {
                         "ids": assetIds,
                     }
                     # print(body)
                     admin = False
                     payload=json.dumps(body)
-                    self.call_api("PUT", api, admin, payload,own_api_key)
+                    resp = self.call_api("PUT", api, admin, payload,own_api_key)
+                    # print(resp)
 
     def build_album_users(self,immich_users,init_user,to_share):
         AlbumUsers = {}
@@ -409,6 +433,7 @@ class ImmichApi:
             procAlbum = procAlbum.replace(f" {suffix}","")
         else:
             procAlbum = "DropAlbum"
+            # print("DROPALBUM WOULD HAVE BEEN MADE")
             suffix = "$"
         if procAlbum not in album_dict:
             album_dict[procAlbum] = {}
@@ -431,6 +456,6 @@ class ImmichApi:
                 }
             admin = False
             payload=json.dumps(body)
-            self.call_api("PATCH", api, admin, payload,own_api_key)
+            # self.call_api("PATCH", api, admin, payload,own_api_key)
 
             

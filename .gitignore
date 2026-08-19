@@ -2,3 +2,4 @@
 .github
 /__pycache__/*
 settings.py
+upload_state.json

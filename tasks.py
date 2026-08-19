@@ -97,6 +97,7 @@ def notidelete(rbimmich):
 def updateloop(rbimmich,api_key):
     local=True #local = True as only owned albums need to be added to the list for each user
     album_ids,album_list = rbimmich.get_albums(local)
+    
     for albumname in album_list['album']:
         album_id = album_list['album'][albumname]
         update_album_dict[albumname]={}
@@ -117,9 +118,10 @@ def createloop(rbimmich,init_user,api_key,album_dict):
     local = False
     album_ids,album_list = rbimmich.get_albums(local)
     # print(album_list)
+    # print(album_final)
     immich_users = rbimmich.get_users()
     AlbumUsers,set_user_id = rbimmich.build_album_users(immich_users,init_user,to_share)
-    print(f"User ID: \t \t \t \t {set_user_id}")
+    # print(f"User ID: \t \t \t \t {set_user_id}")
     libraries = rbimmich.get_libraries() 
     search_lib = rbimmich.get_search_lib(set_user_id,libraries)
     assetsReceived = rbimmich.get_assets(asset_limit,search_lib)
